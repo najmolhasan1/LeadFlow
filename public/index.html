@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeadFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"> 
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #F8F7FF;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .gradient-btn {
+            background: linear-gradient(90deg, #764ba2 0%, #E954E2 100%);
+            transition: all 0.3s ease;
+        }
+
+        .gradient-btn:hover {
+            background: linear-gradient(90deg, #E954E2 0%, #764ba2 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(233, 84, 226, 0.4);
+        }
+
+        .secondary-btn {
+            background: white;
+            color: #4E0C79;
+            border: 2px solid #4E0C79;
+            transition: all 0.3s ease;
+        }
+
+        .secondary-btn:hover {
+            background: #4E0C79;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .feature-card {
+            transition: all 0.3s ease;
+            border: 1px solid #E0E0E0;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(118, 75, 162, 0.15);
+            border-color: #E954E2;
+        }
+
+        .pricing-card {
+            transition: all 0.3s ease;
+            border: 2px solid #E0E0E0;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(118, 75, 162, 0.2);
+        }
+
+        .pricing-card.popular {
+            border-color: #E954E2;
+            position: relative;
+            transform: scale(1.05);
+        }
+
+        .pricing-card.popular:hover {
+            transform: scale(1.05) translateY(-5px);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, #764ba2 0%, #E954E2 100%);
+            color: white;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .nav-section {
+            background-color: white;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            color: #4E0C79;
+            font-weight: 800;
+        }
+
+        .newsletter-section {
+            background: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="nav-section sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <a href="#" class="text-3xl font-extrabold logo tracking-tight">
+                        LeadFlow<span style="color: #E954E2;">.</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Nav Links and Button -->
+                <div class="hidden md:flex md:space-x-8 items-center">
+                    <a href="#how-it-works" class="text-gray-600 hover:text-[#E954E2] transition duration-150 ease-in-out font-medium">How it Works</a>
+                    <a href="#pricing" class="text-gray-600 hover:text-[#E954E2] transition duration-150 ease-in-out font-medium">Pricing</a>
+                    <a href="#about-us" class="text-gray-600 hover:text-[#E954E2] transition duration-150 ease-in-out font-medium">About Us</a>
+                    <button onclick="location.href='admin-login.html'" class="gradient-btn inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-semibold rounded-lg shadow-lg text-white transition duration-200">
+                       <i class="fa-solid fa-user" style="margin-right: 10px;"></i> Admin Login
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-lg text-gray-400 hover:text-white hover:bg-[#764ba2] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#E954E2] transition duration-150 ease-in-out" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <!-- Icon when menu is closed -->
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <!-- Icon when menu is open -->
+                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu, hidden by default -->
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#how-it-works" class="block px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:bg-[#F8F7FF] hover:text-[#E954E2]">How it Works</a>
+                <a href="#pricing" class="block px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:bg-[#F8F7FF] hover:text-[#E954E2]">Pricing</a>
+                <a href="#about-us" class="block px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:bg-[#F8F7FF] hover:text-[#E954E2]">About Us</a>
+                <button onclick="location.href='admin-login.html'" class="w-full gradient-btn inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-semibold rounded-lg shadow-lg text-white transition duration-200 mt-2">
+                    Admin Login
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="pt-16 pb-20 lg:pt-24 lg:pb-32 bg-gradient-to-br from-[#F8F7FF] to-[#EDE9FE] overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:grid lg:grid-cols-12 lg:gap-8 items-center">
+                <!-- Text Content -->
+                <div class="lg:col-span-6 xl:col-span-7">
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 leading-tight">
+                        <span class="block">Securely Share Files.</span>
+                        <span class="block text-transparent bg-clip-text bg-gradient-to-r from-[#764ba2] to-[#E954E2] mt-1">Collect Verified User Leads.</span>
+                    </h1>
+                    <p class="mt-6 text-lg text-gray-600 max-w-xl">
+                        Protect your premium documents and content. Only authenticated, registered users can download, giving you a powerful list of highly engaged leads.
+                    </p>
+                    <div class="mt-10 flex flex-col sm:flex-row gap-4">
+                        <button onclick="location.href='admin-login.html'" class="gradient-btn inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-semibold rounded-lg shadow-lg text-white transition duration-200">
+                            Get Started Now <i class="fa-regular fa-circle-right" style="margin-left: 10px;"></i>
+                        </button>
+                        <a href="#pricing" class="secondary-btn inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-lg shadow-md transition duration-200">
+                            View Pricing
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Image/Illustration (Placeholder) -->
+                <div class="mt-12 lg:mt-0 lg:col-span-6 xl:col-span-5 hidden md:block">
+                    <div class="relative max-w-md mx-auto">
+                        <div class="bg-white p-8 rounded-2xl shadow-2xl border border-[#E0E0E0] transform rotate-2 scale-105 transition duration-500 ease-in-out hover:rotate-0">
+                            <div class="w-12 h-12 bg-gradient-to-r from-[#764ba2] to-[#E954E2] rounded-lg mb-4 flex items-center justify-center">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-900">High-Value Leads</h3>
+                            <p class="mt-3 text-gray-600">Every download is a verified, registered user with complete contact information.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section id="how-it-works" class="py-16 sm:py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-base text-transparent bg-clip-text bg-gradient-to-r from-[#764ba2] to-[#E954E2] font-semibold tracking-wide uppercase">Core Functionality</h2>
+                <p class="mt-2 text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                    Powerful Features for Admins and Users
+                </p>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                
+                <!-- Feature 1 -->
+                <div class="pt-6">
+                    <div class="flow-root bg-white rounded-2xl px-6 pb-8 feature-card h-full">
+                        <div class="-mt-6">
+                            <div>
+                                <span class="inline-flex items-center justify-center p-3 bg-gradient-to-r from-[#764ba2] to-[#E954E2] rounded-xl shadow-lg">
+                                    <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <h3 class="mt-8 text-xl font-semibold text-gray-900 tracking-tight">Easy File Upload</h3>
+                            <p class="mt-5 text-base text-gray-600">
+                                Admins can quickly upload files (PDF, DOC, images) via a simple interface and generate unique, secure download links.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="pt-6">
+                    <div class="flow-root bg-white rounded-2xl px-6 pb-8 feature-card h-full">
+                        <div class="-mt-6">
+                            <div>
+                                <span class="inline-flex items-center justify-center p-3 bg-gradient-to-r from-[#764ba2] to-[#E954E2] rounded-xl shadow-lg">
+                                    <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 1.657-1.007 3-2.25 3S7.5 12.657 7.5 11M14.5 11c0 1.657-1.007 3-2.25 3s-2.25-1.343-2.25-3M16.5 11c0 1.657-1.007 3-2.25 3s-2.25-1.343-2.25-3M18 11V7a2 2 0 00-2-2h-4L8 3H4a2 2 0 00-2 2v6a2 2 0 002 2h2" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <h3 class="mt-8 text-xl font-semibold text-gray-900 tracking-tight">Verified Lead Generation</h3>
+                            <p class="mt-5 text-base text-gray-600">
+                                Users must register and log in to access files, ensuring every download is tied to a verified account.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="pt-6">
+                    <div class="flow-root bg-white rounded-2xl px-6 pb-8 feature-card h-full">
+                        <div class="-mt-6">
+                            <div>
+                                <span class="inline-flex items-center justify-center p-3 bg-gradient-to-r from-[#764ba2] to-[#E954E2] rounded-xl shadow-lg">
+                                    <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2zM10 11H7m6 4H7m0 4h10" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <h3 class="mt-8 text-xl font-semibold text-gray-900 tracking-tight">CSV Export & Management</h3>
+                            <p class="mt-5 text-base text-gray-600">
+                                Access the Admin Panel to view all registered users and export your complete lead list as a CSV file for analysis.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-16 sm:py-24 bg-gradient-to-br from-[#F8F7FF] to-[#EDE9FE]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-base text-transparent bg-clip-text bg-gradient-to-r from-[#764ba2] to-[#E954E2] font-semibold tracking-wide uppercase">Pricing</h2>
+                <p class="mt-2 text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                    Simple, Transparent Pricing
+                </p>
+                <p class="mt-4 max-w-2xl text-xl text-gray-600 mx-auto">
+                    Choose the plan that works best for your business. All plans include core features.
+                </p>
+            </div>
+
+            <div class="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
+                
+                <!-- Starter Plan -->
+                <div class="pricing-card bg-white rounded-2xl p-8 text-center">
+                    <h3 class="text-2xl font-bold text-gray-900">Starter</h3>
+                    <div class="mt-6">
+                        <span class="text-4xl font-extrabold text-gray-900">$19</span>
+                        <span class="text-gray-600">/month</span>
+                    </div>
+                    <p class="mt-4 text-gray-600">Perfect for small businesses</p>
+                    <ul class="mt-8 space-y-4">
+                        <li class="flex items-center">
+                            <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>Up to 100 downloads/month</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>Basic file management</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>Email support</span>
+                        </li>
+                    </ul>
+                    <button onclick="location.href='admin-login.html'" class="w-full mt-8 secondary-btn py-3 px-6 rounded-lg font-semibold transition duration-200">
+                        Get Started
+                    </button>
+                </div>
+
+                <!-- Professional Plan (Popular) -->
+                <div class="pricing-card popular bg-white rounded-2xl p-8 text-center">
+                    <div class="popular-badge">MOST POPULAR</div>
+                    <h3 class="text-2xl font-bold text-gray-900">Professional</h3>
+                    <div class="mt-6">
+                        <span class="text-4xl font-extrabold text-gray-900">$49</span>
+                        <span class="text-gray-600">/month</span>
+                    </div>
+                    <p class="mt-4 text-gray-600">Ideal for growing teams</p>
+                    <ul class="mt-8 space-y-4">
+                        <li class="flex items-center">
+                            <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>Up to 500 downloads/month</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>Advanced analytics</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>Priority support</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>Custom branding</span>
+                        </li>
+                    </ul>
+                    <button onclick="location.href='admin-login.html'" class="w-full mt-8 gradient-btn py-3 px-6 rounded-lg font-semibold text-white transition duration-200">
+                        Get Started
+                    </button>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="pricing-card bg-white rounded-2xl p-8 text-center">
+                    <h3 class="text-2xl font-bold text-gray-900">Enterprise</h3>
+                    <div class="mt-6">
+                        <span class="text-4xl font-extrabold text-gray-900">$99</span>
+                        <span class="text-gray-600">/month</span>
+                    </div>
+                    <p class="mt-4 text-gray-600">For large organizations</p>
+                    <ul class="mt-8 space-y-4">
+                        <li class="flex items-center">
+                            <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>Unlimited downloads</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>Advanced security features</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>Dedicated account manager</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>Custom integrations</span>
+                        </li>
+                    </ul>
+                    <button onclick="location.href='admin-login.html'" class="w-full mt-8 secondary-btn py-3 px-6 rounded-lg font-semibold transition duration-200">
+                        Contact Sales
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter-section py-16 sm:py-24">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-extrabold text-black sm:text-4xl">
+                Stay Updated with LeadFlow
+            </h2>
+            <p class="mt-4 text-xl text-black-200">
+                Get the latest updates, tips, and exclusive content delivered to your inbox.
+            </p>
+            <div class="mt-8 max-w-md mx-auto">
+                <form class="sm:flex" id="newsletterForm">
+                    <label for="email-address" class="sr-only">Email address</label>
+                    <input id="email-address" name="email" type="email" autocomplete="email" required 
+                           class="w-full px-5 py-3 placeholder-gray-500 focus:ring-2 focus:ring-[#E954E2] focus:border-transparent rounded-lg border-0"
+                           placeholder="Enter your email" style="border: 2px solid #764ba2;">
+                    <button type="submit" class="mt-3 sm:mt-0 sm:ml-3 w-full sm:w-auto gradient-btn px-6 py-3 border border-transparent text-base font-semibold rounded-lg shadow-lg text-white transition duration-200">
+                        Subscribe
+                    </button>
+                </form>
+                <p class="mt-3 text-sm text-black-300">
+                    We care about your data. Read our <a href="#" class="text-white underline">Privacy Policy</a>.
+                </p>
+            </div>
+            <div id="newsletterMessage" class="mt-4 text-sm text-white" style="display: none;"></div>
+        </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section id="about-us" class="py-16 sm:py-24 bg-gradient-to-r from-[#420D64] to-[#764ba2]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:text-center">
+                <h2 class="text-base text-[#E954E2] font-semibold tracking-wide uppercase">Our Mission</h2>
+                <p class="mt-2 text-3xl font-extrabold text-white sm:text-4xl">
+                    Built for Growth, Driven by Security
+                </p>
+                <p class="mt-4 max-w-2xl text-xl text-gray-300 lg:mx-auto">
+                    We believe your high-value content should directly fuel your lead generation efforts. LeadFlow provides the secure gateway to make that happen, built on a robust and modern tech stack.
+                </p>
+                <div class="mt-8 flex justify-center">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 max-w-2xl">
+                        <p class="text-lg text-white italic">
+                            "Transform your content distribution into a powerful lead generation engine with zero compromise on security."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="md:flex md:items-center md:justify-between">
+                <div class="flex-1 min-w-0">
+                    <a href="#" class="text-2xl font-extrabold logo tracking-tight">
+                        LeadFlow<span style="color: #E954E2;">.</span>
+                    </a>
+                    <p class="mt-4 text-base text-gray-500">
+                        Secure file sharing meets powerful lead generation.
+                    </p>
+                </div>
+                <div class="mt-8 flex justify-center space-x-6 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-[#E954E2] transition duration-150 text-sm">
+                        Privacy Policy
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-[#E954E2] transition duration-150 text-sm">
+                        Terms of Service
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-[#E954E2] transition duration-150 text-sm">
+                        Contact
+                    </a>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-gray-200 pt-8 md:flex md:items-center md:justify-between">
+                <p class="text-center text-base text-gray-400 md:text-left">
+                    &copy; 2025 LeadFlow. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Mobile Menu Toggle -->
+    <script>
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            const button = this;
+
+            // Toggle visibility
+            menu.classList.toggle('hidden');
+
+            // Toggle icons (Hamburger <-> X)
+            button.querySelector('svg:nth-child(2)').classList.toggle('hidden');
+            button.querySelector('svg:nth-child(3)').classList.toggle('hidden');
+
+            // Close menu when a link is clicked
+            menu.querySelectorAll('a, button').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (!menu.classList.contains('hidden')) {
+                        menu.classList.add('hidden');
+                        button.querySelector('svg:nth-child(2)').classList.remove('hidden');
+                        button.querySelector('svg:nth-child(3)').classList.add('hidden');
+                    }
+                });
+            });
+        });
+
+        // Newsletter Form Handling
+        document.getElementById('newsletterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email-address').value;
+            const messageDiv = document.getElementById('newsletterMessage');
+            
+            // Simple validation
+            if (email && email.includes('@')) {
+                messageDiv.textContent = '🎉 Thank you for subscribing! We\'ll be in touch soon.';
+                messageDiv.style.color = '#10B981';
+                messageDiv.style.display = 'block';
+                document.getElementById('email-address').value = '';
+                
+                // Hide message after 5 seconds
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 5000);
+            } else {
+                messageDiv.textContent = 'Please enter a valid email address.';
+                messageDiv.style.color = '#EF4444';
+                messageDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

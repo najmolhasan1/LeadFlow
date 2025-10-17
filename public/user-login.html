@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login - LeadFlow</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"> 
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- Base Layout Styles --- */
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #F8F7FF;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Main container to center everything */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navigation styles */
+        .nav-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 80px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #4E0C79;
+        }
+
+        .register-btn {
+            background: linear-gradient(90deg, #764ba2 0%, #E954E2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Center the login container */
+        .page-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            padding: 40px 20px;
+        }
+
+        /* Container for the dual-panel design */
+        .login-container-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 1100px;
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            min-height: 650px;
+        }
+
+        /* Left Panel: Form Section */
+        .form-panel {
+            flex: 1;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+        }
+
+        /* Right Panel: Graphic/Abstract Section */
+        .graphic-panel {
+            flex: 1;
+            background-color: #420D64;
+            position: relative;
+            overflow: hidden;
+            background-image: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" viewBox="0 0 600 800" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="150" y="50" width="100" height="100" rx="20" fill="%23FFA500"/><rect x="400" y="100" width="80" height="80" rx="10" fill="%23E954E2"/><path d="M50 200L150 150L250 200L150 250L50 200Z" fill="%23667eea"/><circle cx="500" cy="500" r="120" fill="%23764ba2"/><path d="M200 600C200 655.228 155.228 700 100 700C44.7715 700 0 655.228 0 600C0 544.772 44.7715 500 100 500C155.228 500 200 544.772 200 600Z" fill="%23E954E2"/><rect x="400" y="650" width="150" height="40" rx="10" fill="%23667eea"/><rect x="50" y="700" width="80" height="20" rx="5" fill="%23FFA500"/><circle cx="50" cy="50" r="30" fill="%23E954E2"/><path d="M500 20L550 50L500 80L450 50L500 20Z" fill="%2338B2AC"/><rect x="300" y="700" width="80" height="80" rx="20" fill="%2338B2AC"/><rect x="500" y="300" width="80" height="80" rx="10" fill="%23667eea"/><rect x="100" y="300" width="120" height="30" rx="5" fill="%23FFA500"/><path d="M550 50L600 80L550 110L500 80L550 50Z" fill="%234E0C79"/><rect x="450" y="150" width="30" height="150" rx="5" fill="%23764ba2"/><rect x="400" y="250" width="100" height="30" rx="5" fill="%23E954E2"/><circle cx="200" cy="400" r="50" fill="%23FFA500"/><path d="M100 450L150 400L200 450L150 500L100 450Z" fill="%2338B2AC"/><rect x="50" y="550" width="100" height="20" rx="5" fill="%23E954E2"/><rect x="400" y="400" width="20" height="100" rx="5" fill="%23764ba2"/><rect x="550" y="600" width="30" height="80" rx="5" fill="%23FFA500"/><path d="M50 750L100 720L150 750L100 780L50 750Z" fill="%2338B2AC"/><path d="M250 750L300 780L350 750L300 720L250 750Z" fill="%23E954E2"/></svg>');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Form Content Styling */
+        .auth-form-content {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .auth-form-content h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2A0436;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+        
+        .auth-form-content .subtitle {
+            font-size: 16px;
+            color: #555555;
+            margin-bottom: 40px;
+            text-align: left;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #4E0C79;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .input-style {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #E0E0E0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            box-sizing: border-box;
+        }
+
+        .input-style:focus {
+            outline: none;
+            border-color: #E954E2;
+            box-shadow: 0 0 0 3px rgba(233, 84, 226, 0.2);
+        }
+
+        /* Login Button - Gradient Style */
+        .btn-login-gradient {
+            background: linear-gradient(90deg, #764ba2 0%, #E954E2 100%);
+            box-shadow: 0 8px 20px rgba(118, 75, 162, 0.3);
+            transition: all 0.3s ease;
+            width: 100%;
+            padding: 14px;
+            font-size: 18px;
+            font-weight: 700;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        .btn-login-gradient:hover {
+            background: linear-gradient(90deg, #E954E2 0%, #764ba2 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(233, 84, 226, 0.4);
+        }
+
+        /* Social Login Button */
+        .btn-google {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #E0E0E0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            background-color: #fff;
+            color: #2A0436;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s, border-color 0.3s;
+            margin-bottom: 25px;
+        }
+
+        .btn-google img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        .no-account-link {
+            text-align: center;
+            font-size: 15px;
+            color: #555555;
+            width: 100%;
+            margin-top: 30px;
+        }
+
+        .no-account-link a {
+            color: #E954E2;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.3s;
+        }
+
+        .no-account-link a:hover {
+            color: #764ba2;
+        }
+
+        .or-divider {
+            text-align: center;
+            color: #888;
+            margin: 25px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .or-divider hr {
+            flex: 1;
+            border: none;
+            border-top: 1px solid #E0E0E0;
+        }
+
+        .or-divider span {
+            padding: 0 15px;
+        }
+
+        .social-link{
+            display: flex;
+            width: 25vw;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 24px;
+        }
+
+        
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .login-container-wrapper {
+                max-width: 90%;
+                min-height: 600px;
+            }
+            .form-panel {
+                padding: 40px;
+            }
+        }
+        @media (max-width: 768px) {
+            .login-container-wrapper {
+                flex-direction: column;
+                min-height: auto;
+                border-radius: 10px;
+            }
+            .graphic-panel {
+                display: none;
+            }
+            .form-panel {
+                padding: 30px;
+            }
+            .auth-form-content h2 {
+                font-size: 28px;
+            }
+            .nav-section {
+                padding: 15px 20px;
+            }
+
+                    .social-link{
+            display: flex;
+            width: 68vw;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 24px;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Navigation -->
+        <section class="nav-section">
+            <div class="logo">LeadFlow <span style="color: #E954E2;">.</span></div>
+            <div class="register-btn"> <a href="user-register.html"> <i class="fa-solid fa-user-plus" style="margin-right: 5px;"></i>Register</a></div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="page-content">
+            <div class="login-container-wrapper">
+                <div class="form-panel">
+                    <div class="auth-form-content">
+                        <h2 class="auth-heading">Welcome back!</h2>
+                        <p class="subtitle">Login to get unlimited access to your files.</p>
+
+                        <form id="loginForm" class="space-y-6">
+                            <div class="form-group">
+                                <label for="email">Email Address:</label>
+                                <input type="email" id="email" name="email" required placeholder="your.email@example.com"
+                                       class="input-style">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password">Password:</label>
+                                <input type="password" id="password" name="password" required placeholder="Enter your password"
+                                       class="input-style">
+                            </div>
+                            
+                            <button type="submit" class="btn-login-gradient" id="submitBtn">
+                                <i class="fa-solid fa-arrow-right-to-bracket" style="margin-right: 5px;"></i>Log in
+                            </button>
+
+                        </form>
+
+                        <p class="no-account-link">
+                            Don't have an account? 
+                            
+                            <a href="user-register.html" id="registerLink" class="font-medium">
+                                Register here
+                            </a>
+                        </p>
+
+                        <div class="or-divider">
+                            <hr>
+                            <span>Connect with us</span>
+                            <hr>
+                        </div>
+
+                            <div class="social-link">
+                                <div><a href="https://www.facebook.com/programmingHero/" target="_blank"> <i class="fa-brands fa-facebook" style="cursor: pointer;"></i> </a></div>
+                                <div><a href="https://www.instagram.com/programminghero/?hl=en" target="_blank"> <i class="fa-brands fa-instagram" style="cursor: pointer;"></i> </a></div>
+                                <div><a href="https://bd.linkedin.com/company/programminghero" target="_blank"><i class="fa-brands fa-linkedin" style="cursor: pointer;"></i></a></div>
+                                <div><a href="https://www.youtube.com/c/ProgrammingHeroCommunity" target="_blank"><i class="fa-brands fa-youtube" style="cursor: pointer;"></i></a></div>
+                            </div>
+                        
+                        
+                        <div id="message" class="message" style="display:none;"></div>
+                    </div>
+                </div>
+
+                <div class="graphic-panel"></div>
+            </div>
+        </div>
+    </div>
+
+   <script>
+    // Navigation bar register button functionality - FIXED
+    document.querySelector('.register-btn a').addEventListener('click', function(e) {
+        // Get fileId from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const fileId = urlParams.get('fileId');
+        
+        // If fileId exists, preserve it in the register link
+        if (fileId) {
+            e.preventDefault();
+            window.location.href = `user-register.html?fileId=${fileId}`;
+        }
+        // If no fileId, let the default link behavior work
+    });
+
+    // Get fileId from URL parameters and preserve it
+    const urlParams = new URLSearchParams(window.location.search);
+    const fileId = urlParams.get('fileId');
+    
+    // Update registration link to preserve fileId
+    if (fileId) {
+        document.getElementById('registerLink').href = `user-register.html?fileId=${fileId}`;
+        console.log('File ID detected in login page:', fileId);
+        
+        // Show file context message
+        const fileContext = document.createElement('div');
+        fileContext.className = 'bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6';
+        fileContext.innerHTML = `
+            <div class="flex items-center">
+                <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span class="text-blue-800 font-medium">You're logging in to access a file</span>
+            </div>
+        `;
+        document.querySelector('.auth-form-content').prepend(fileContext);
+    }
+
+    // User Login - FIXED REDIRECT
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('submitBtn');
+        const originalText = submitBtn.innerHTML;
+        
+        // Show loading state
+        submitBtn.innerHTML = 'Logging in...';
+        submitBtn.disabled = true;
+
+        const formData = {
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value
+        };
+
+        console.log('Login attempt with fileId:', { ...formData, fileId });
+
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showMessage('Login successful! Redirecting to download...', 'success');
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                
+                // ✅ FIXED: ALWAYS redirect to download page with fileId
+                setTimeout(() => {
+                    if (fileId) {
+                        // Use the correct server route
+                        window.location.href = `/download/${fileId}`;
+                    } else {
+                        // If no fileId, go to home
+                        window.location.href = 'index.html';
+                    }
+                }, 1000);
+                
+            } else {
+                showMessage('Login failed: ' + (data.message || 'Invalid credentials.'), 'error');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            showMessage('Login failed. Please check your connection.', 'error');
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+
+    function showMessage(message, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = message;
+        messageDiv.className = `message text-center mt-4 ${type}`;
+    }
+
+    // Auto-fill previous user data from localStorage
+    document.addEventListener('DOMContentLoaded', function() {
+        const lastUserEmail = localStorage.getItem('lastUserEmail');
+        const rememberMe = localStorage.getItem('rememberMe') === 'true';
+        
+        if (rememberMe && lastUserEmail) {
+            document.getElementById('email').value = lastUserEmail;
+        }
+    });
+</script>
+</body>
+</html>

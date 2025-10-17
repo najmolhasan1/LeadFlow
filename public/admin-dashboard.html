@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - LeadFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        /* === GLOBAL STYLES === */
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #F8F7FF;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* === HEADER STYLES === */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #E0E0E0;
+        }
+
+        .admin-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2A0436;
+            margin: 0;
+        }
+
+        /* Navigation styles */
+        .nav-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 80px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #4E0C79;
+        }
+
+        .register-btn {
+            background: linear-gradient(90deg, #764ba2 0%, #E954E2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .logout-btn {
+            background: linear-gradient(90deg, #764ba2 0%, #E954E2 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Space Grotesk';
+            border: none;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 84, 226, 0.4);
+        }
+
+        /* === MESSAGE STYLES === */
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.success {
+            background-color: #dcfce7;
+            color: #16a34a;
+            border: 1px solid #4ade80;
+        }
+
+        .message.error {
+            background-color: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #f87171;
+        }
+
+        /* === UPLOAD FORM STYLES === */
+        .upload-form {
+            background-color: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            margin-bottom: 40px;
+            border: 1px solid #E0E0E0;
+        }
+
+        .upload-form h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2A0436;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #4E0C79;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #E0E0E0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #E954E2;
+            box-shadow: 0 0 0 3px rgba(233, 84, 226, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #764ba2 0%, #E954E2 100%);
+            box-shadow: 0 8px 20px rgba(118, 75, 162, 0.3);
+            transition: all 0.3s ease;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Space Grotesk';
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #E954E2 0%, #764ba2 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(233, 84, 226, 0.4);
+        }
+
+        #downloadLink {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #F8F7FF;
+            border-radius: 10px;
+            border: 1px solid #E0E0E0;
+            display: none;
+        }
+
+        .link-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        
+        }
+
+        #generatedLink {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            background-color: white;
+            font-size: 14px;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #4E0C79;
+            border: 2px solid #4E0C79;
+            transition: all 0.3s ease;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: #4E0C79;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* === SECTION CONTAINER STYLES === */
+        .section-container {
+            background-color: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            margin-bottom: 40px;
+            border: 1px solid #E0E0E0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2A0436;
+            margin: 0;
+        }
+
+        .controls-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* === SEARCH BOX STYLES === */
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            color: #888;
+        }
+
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 200px;
+        }
+
+        /* === DROPDOWN STYLES === */
+        .items-per-page, .bulk-actions {
+            padding: 10px 15px;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: white;
+        }
+
+        /* === TABLE STYLES === */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 2px solid #E0E0E0;
+            font-weight: 600;
+            color: #4E0C79;
+            background-color: #F8F7FF;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #E0E0E0;
+        }
+
+        tr:hover {
+            background-color: #F8F7FF;
+        }
+
+        .sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .sortable:hover {
+            color: #E954E2;
+        }
+
+        /* === PAGINATION STYLES === */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .pagination-btn {
+            padding: 8px 15px;
+            border: 1px solid #E0E0E0;
+            border-radius: 6px;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination-btn:hover {
+            background-color: #F8F7FF;
+        }
+
+        .pagination-btn.active {
+            background: linear-gradient(90deg, #764ba2 0%, #E954E2 100%);
+            color: white;
+            border-color: #764ba2;
+        }
+
+
+
+
+        
+        /* === RESPONSIVE STYLES === */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .admin-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .controls-container {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .search-box input {
+                width: 150px;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+                /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .admin-container-wrapper {
+                max-width: 90%;
+                min-height: 600px;
+            }
+            .form-panel {
+                padding: 40px;
+            }
+        }
+        @media (max-width: 768px) {
+            .admin-container-wrapper {
+                flex-direction: column;
+                min-height: auto;
+                border-radius: 10px;
+            }
+            .graphic-panel {
+                display: none;
+            }
+            .form-panel {
+                padding: 30px;
+            }
+            .auth-form-content h2 {
+                font-size: 28px;
+            }
+            .nav-section {
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+            <section class="nav-section">
+            <div class="logo">LeadFlow <span style="color: #E954E2;">.</span></div>
+            <div class=""> <button onclick="adminLogout()" class=" prim-btn logout-btn"> <i class="fas fa-sign-out-alt"></i> Logout</button></div>
+        </section>
+    <div class="container">
+
+
+        
+        <div class="admin-header">
+            <h1 style="text-align: center !important;">Admin Dashboard</h1>
+            <!-- <button onclick="adminLogout()" class=" prim-btn logout-btn"> <i class="fas fa-sign-out-alt"></i> Logout</button> -->
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <!-- File Upload Section -->
+        <div class="upload-form">
+            <h2>Upload New File</h2>
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label for="topic">Topic:</label>
+                    <input type="text" id="topic" name="topic" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="file">Select File:</label>
+                    <input type="file" id="file" name="file" required>
+                </div>
+                
+                <button type="submit" class="btn-primary"> <i class="fas fa-link"></i> Generate Link</button>
+            </form>
+            
+            <div id="downloadLink">
+                <strong style="display: block; margin-bottom: 10px; color: #4E0C79;">Download Link:</strong>
+                <div class="link-container">
+                    <input type="text" id="generatedLink" readonly>
+                    <button onclick="copyGeneratedLink()" class="btn-primary copy-btn">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Files List Section -->
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Uploaded Files</h2>
+                <div class="controls-container">
+                    <!-- Search -->
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="filesSearch" placeholder="Search files..." onkeyup="handleFilesSearch()">
+                    </div>
+                    <!-- Items Per Page -->
+                    <select id="filesPerPage" onchange="changeFilesPerPage(this.value)" class="items-per-page">
+                        <option value="10">10 per page</option>
+                        <option value="25">25 per page</option>
+                        <option value="50">50 per page</option>
+                    </select>
+                    <!-- Bulk Actions -->
+                    <select id="filesBulkActions" onchange="handleFilesBulkAction(this.value)" class="bulk-actions" disabled>
+                        <option value="">Bulk Actions</option>
+                        <option value="delete">Delete Selected</option>
+                    </select>
+                </div>
+            </div>
+            
+            <table id="filesTable">
+                <thead>
+                    <tr>
+                        <th width="50">
+                            <input type="checkbox" id="selectAllFiles" onchange="toggleSelectAllFiles(this.checked)">
+                        </th>
+                        <th onclick="sortFiles('topic')" class="sortable">
+                            Topic <i class="fas fa-sort"></i>
+                        </th>
+                        <th onclick="sortFiles('originalName')" class="sortable">
+                            File Name <i class="fas fa-sort"></i>
+                        </th>
+                        <th>Download Link</th>
+                        <th onclick="sortFiles('uploadedAt')" class="sortable">
+                            Date <i class="fas fa-sort"></i>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="filesTableBody">
+                    <!-- Files will be loaded here -->
+                </tbody>
+            </table>
+            
+            <!-- Files Pagination -->
+            <div id="filesPagination" class="pagination-container"></div>
+        </div>
+
+        <!-- Users List Section - UPDATED WITH WHATSAPP COLUMN -->
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Registered Users</h2>
+                <div class="controls-container">
+                     
+                    <!-- Search -->
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="usersSearch" placeholder="Search users..." onkeyup="handleUsersSearch()">
+                    </div>
+                    <!-- Items Per Page -->
+                    <select id="usersPerPage" onchange="changeUsersPerPage(this.value)" class="items-per-page">
+                        <option value="10">10 per page</option>
+                        <option value="25">25 per page</option>
+                        <option value="50">50 per page</option>
+                    </select>
+                    <!-- Bulk Actions -->
+                    <select id="usersBulkActions" onchange="handleUsersBulkAction(this.value)" class="bulk-actions" disabled>
+                        <option value="">Bulk Actions</option>
+                        <option value="delete">Delete Selected</option>
+                        <option value="export">Export Selected</option>
+                    </select>
+
+                    <button onclick="loadAllUsers()" class="btn-secondary">
+                            <i class="fas fa-sync-alt"></i> 
+                    </button>
+                    
+                    <!-- Export All -->
+                    <button onclick="exportUsers()" class="btn-primary">Export All as CSV</button>
+                </div>
+            </div>
+            
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th width="50">
+                            <input type="checkbox" id="selectAllUsers" onchange="toggleSelectAllUsers(this.checked)">
+                        </th>
+                        <th onclick="sortUsers('name')" class="sortable">
+                            Name <i class="fas fa-sort"></i>
+                        </th>
+                        <th onclick="sortUsers('email')" class="sortable">
+                            Email <i class="fas fa-sort"></i>
+                        </th>
+                        <th onclick="sortUsers('whatsapp')" class="sortable">
+                            WhatsApp <i class="fas fa-sort"></i>
+                        </th>
+                        <th onclick="sortUsers('createdAt')" class="sortable">
+                            Registration Date <i class="fas fa-sort"></i>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <!-- Users will be loaded here -->
+                </tbody>
+            </table>
+            
+            <!-- Users Pagination -->
+            <div id="usersPagination" class="pagination-container"></div>
+        </div>
+    </div>
+
+
+    <!-- Your existing JavaScript file - functionality remains unchanged -->
+    <script src="js/admin.js"></script>
+</body>
+</html>

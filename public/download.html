@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Your File - LeadFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #F8F7FF;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .nav-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #4E0C79;
+        }
+
+        .user-welcome {
+            color: #4E0C79;
+            font-weight: 600;
+        }
+
+        .page-content {
+            flex: 1;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .download-container {
+            width: 100%;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid #E0E0E0;
+        }
+
+        .download-success {
+            background: linear-gradient(135deg, #764ba2 0%, #E954E2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(118, 75, 162, 0.3);
+        }
+
+        .download-success i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .download-success h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .download-success p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .file-info {
+            background: #F8F7FF;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 4px solid #E954E2;
+        }
+
+        .file-info h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2A0436;
+            margin-bottom: 15px;
+        }
+
+        .file-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .file-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #E0E0E0;
+        }
+
+        .file-detail:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #4E0C79;
+        }
+
+        .detail-value {
+            color: #2A0436;
+            font-weight: 500;
+        }
+
+        .btn-download {
+            background: linear-gradient(90deg, #16a34a 0%, #22c55e 100%);
+            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.3);
+            transition: all 0.3s ease;
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-download:hover {
+            background: linear-gradient(90deg, #15803d 0%, #16a34a 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(22, 163, 74, 0.4);
+        }
+
+        .btn-download:disabled {
+            background: #f049fc;
+            transform: none;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .email-notice {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 25px;
+            border: 1px solid #c7d2fe;
+        }
+
+        .email-notice i {
+            color: #4f46e5;
+            font-size: 20px;
+        }
+
+        .email-content {
+            margin-left: 15px;
+        }
+
+        .email-content p:first-child {
+            font-weight: 700;
+            color: #3730a3;
+            margin-bottom: 5px;
+        }
+
+        .email-content p:last-child {
+            color: #4f46e5;
+            font-size: 14px;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+
+        .message.error {
+            color: #dc2626;
+            background-color: #fee2e2;
+            border: 1px solid #f87171;
+        }
+
+        .message.success {
+            color: #16a34a;
+            background-color: #dcfce7;
+            border: 1px solid #4ade80;
+        }
+
+        @media (max-width: 768px) {
+            .nav-section {
+                padding: 15px 20px;
+            }
+            
+            .download-container {
+                padding: 25px;
+                margin: 20px;
+            }
+            
+            .download-success {
+                padding: 20px;
+            }
+            
+            .download-success h1 {
+                font-size: 21px;
+            }
+            
+            .file-info {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Navigation -->
+        <section class="nav-section">
+            <div class="logo">LeadFlow <span style="color: #E954E2;">.</span></div>
+            <span class="user-welcome" id="userWelcome"></span>
+        </section>
+
+        <!-- Main Content -->
+        <div class="page-content">
+            <div class="download-container">
+                <!-- Success Header -->
+                <div class="download-success">
+                    <i class="fas fa-check-circle"></i>
+                    <h1>Ready to Download! 🎉</h1>
+                    <p>Your file is prepared for download</p>
+                </div>
+                
+                <!-- File Information -->
+                <div id="fileInfo" class="file-info">
+                    <p>Loading file information...</p>
+                </div>
+
+                <!-- Download Button -->
+                <button id="downloadBtn" class="btn-download">
+                    <i class="fas fa-download"></i>
+                    <span id="downloadText">Download File Now</span>
+                    <span id="downloadLoading" class="hidden">
+                        <i class="fas fa-spinner fa-spin"></i> Downloading...
+                    </span>
+                </button>
+
+                <!-- Email Notice -->
+                <div class="email-notice">
+                    <div class="flex items-start">
+                        <i class="fas fa-envelope mt-1"></i>
+                        <div class="email-content">
+                            <p>Check your email!</p>
+                            <p>We've sent download instructions to your inbox.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Message Display -->
+                <div id="message" class="message" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication and get file ID - FIXED
+        const token = localStorage.getItem('token');
+        const userData = localStorage.getItem('user');
+        const fileId = window.location.pathname.split('/').pop();
+        let fileOriginalName = '';
+        let fileData = null;
+
+        console.log('Download page - Token:', !!token, 'User:', userData, 'File ID:', fileId);
+
+        // Display user welcome
+        if (userData) {
+            const user = JSON.parse(userData);
+            document.getElementById('userWelcome').textContent = `Welcome, ${user.name}!`;
+        }
+
+        // ✅ STRICT AUTH CHECK: Redirect if not authenticated
+        if (!token) {
+            console.log('No token found, redirecting to login...');
+            showMessage('Please login first to download the file.', 'error');
+            setTimeout(() => {
+                window.location.href = `/user-login.html?fileId=${fileId}`;
+            }, 2000);
+            throw new Error('Redirecting to login');
+        }
+
+        // ✅ Check if fileId is valid
+        if (!fileId || fileId === 'download.html') {
+            console.log('Invalid file ID, redirecting to home...');
+            showMessage('Invalid file link. Please contact the administrator.', 'error');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 3000);
+            throw new Error('Invalid file ID');
+        }
+
+        async function loadFileInfo() {
+            try {
+                console.log('Loading file info for:', fileId);
+                
+                const response = await fetch(`/api/files/${fileId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                console.log('File info response:', data);
+
+                if (response.ok) {
+                    fileData = data;
+                    fileOriginalName = data.originalName;
+                    
+                    document.getElementById('fileInfo').innerHTML = `
+                        <h3>${data.topic || 'File Details'}</h3>
+                        <div class="file-details">
+                            <div class="file-detail">
+                                <span class="detail-label">File Name:</span>
+                                <span class="detail-value">${data.originalName}</span>
+                            </div>
+                            <div class="file-detail">
+                                <span class="detail-label">File Type:</span>
+                                <span class="detail-value">${data.originalName.split('.').pop().toUpperCase()}</span>
+                            </div>
+                            <div class="file-detail">
+                                <span class="detail-label">Uploaded:</span>
+                                <span class="detail-value">${new Date(data.uploadedAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                } else {
+                    showMessage(data.message || 'File not found or access denied.', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading file info:', error);
+                showMessage('Error loading file information', 'error');
+            }
+        }
+
+        // Download file function - ONLY WORKS WHEN AUTHENTICATED
+        document.getElementById('downloadBtn').addEventListener('click', async () => {
+            // ✅ DOUBLE CHECK AUTHENTICATION
+            if (!token) {
+                showMessage('Please login to download files.', 'error');
+                window.location.href = `/user-login.html?fileId=${fileId}`;
+                return;
+            }
+
+            const downloadBtn = document.getElementById('downloadBtn');
+            const downloadText = document.getElementById('downloadText');
+            const downloadLoading = document.getElementById('downloadLoading');
+            
+            try {
+                // Show loading state
+                downloadText.classList.add('hidden');
+                downloadLoading.classList.remove('hidden');
+                downloadBtn.disabled = true;
+
+                console.log('Starting authenticated download for file ID:', fileId);
+
+                const response = await fetch(`/api/files/${fileId}/download`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                console.log('Download response status:', response.status);
+
+                if (response.ok) {
+                    // Get filename from response headers
+                    const contentDisposition = response.headers.get('content-disposition');
+                    let filename = fileOriginalName;
+
+                    if (contentDisposition) {
+                        const filenameMatch = contentDisposition.match(/filename\*=['"]?(?:UTF-8'')?([^;"']+)['"]?/i);
+                        if (filenameMatch && filenameMatch[1]) {
+                            filename = decodeURIComponent(filenameMatch[1]);
+                        } else {
+                            const fallbackMatch = contentDisposition.match(/filename=['"]?([^;"']+)['"]?/i);
+                            if (fallbackMatch && fallbackMatch[1]) {
+                                filename = fallbackMatch[1];
+                            }
+                        }
+                    }
+
+                    // Create blob and download
+                    const blob = await response.blob();
+                    
+                    if (blob.size === 0) {
+                        throw new Error('Empty file received');
+                    }
+
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    // Show success state
+                    downloadText.textContent = 'Download Complete! ✅';
+                    downloadText.classList.remove('hidden');
+                    downloadLoading.classList.add('hidden');
+                    
+                    showMessage('Download started successfully! Check your downloads folder.', 'success');
+                    
+                    // Re-enable button after delay
+                    setTimeout(() => {
+                        downloadBtn.disabled = false;
+                        downloadText.textContent = 'Download Again';
+                    }, 3000);
+                    
+                } else {
+                    const errorData = await response.json();
+                    console.error('Download failed:', errorData);
+                    
+                    showMessage('❌ ' + (errorData.message || 'Download failed. Please try again.'), 'error');
+                    
+                    downloadText.classList.remove('hidden');
+                    downloadLoading.classList.add('hidden');
+                    downloadBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Download error:', error);
+                showMessage('❌ Download failed: ' + error.message, 'error');
+                
+                downloadText.classList.remove('hidden');
+                downloadLoading.classList.add('hidden');
+                downloadBtn.disabled = false;
+            }
+        });
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        // Load file info when page loads
+        if (token && fileId) {
+            loadFileInfo();
+        }
+    </script>
+</body>
+</html>

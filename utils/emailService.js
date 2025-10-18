@@ -1,17 +1,29 @@
 const nodemailer = require('nodemailer');
 
-// Create transporter (using Gmail)
+// Railway optimized transporter
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465, // 587 এর বদলে 465
+  secure: true, // port 465 এর জন্য true
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
+  },
+  // Railway specific settings
+  connectionTimeout: 30000, // 30 seconds
+  socketTimeout: 30000,     // 30 seconds
+  tls: {
+    rejectUnauthorized: false // Railway এ এটি important
   }
 });
 
-// Send welcome email with download information - FIXED VERSION
+// Send welcome email with download information - RAILWAY FIXED VERSION
 async function sendWelcomeEmail(userEmail, userName, fileTopic, fileId, appUrl) {
   try {
+    // First verify connection
+    await transporter.verify();
+    console.log('✅ SMTP Connection verified for:', userEmail);
+
     const downloadUrl = `${appUrl}/download/${fileId}`;
     
     const mailOptions = {
@@ -77,17 +89,29 @@ async function sendWelcomeEmail(userEmail, userName, fileTopic, fileId, appUrl) 
                     box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
                 }
                 /* FIXED CSS for Social Links */
-
-                .social-icon-link{
-                color:black;
-                display:flex;
-                justify-content:center;
-                align-items:center;
-                font-weight:bold;
-                text-decoration:underline;
-                gap:10px;
+                .social-links {
+                    text-align: center;
+                    margin: 30px 0;
+                    padding: 20px;
+                    background: #f8f9fa;
+                    border-radius: 8px;
                 }
-
+                .social-icon-link {
+                    color: #764ba2;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    font-weight: bold;
+                    text-decoration: none;
+                    gap: 10px;
+                    margin: 10px 0;
+                    padding: 8px 0;
+                    transition: all 0.3s ease;
+                }
+                .social-icon-link:hover {
+                    color: #E954E2;
+                    text-decoration: underline;
+                }
                 .footer { 
                     text-align: center; 
                     padding: 30px; 
@@ -143,23 +167,23 @@ async function sendWelcomeEmail(userEmail, userName, fileTopic, fileId, appUrl) 
                     
                     <!-- FIXED Social Links Section -->
                     <div class="social-links">
-                        <h4>Click below to Connect With Us</h4>
+                        <h4 style="color: #2c3e50; margin-bottom: 20px;">Click below to Connect With Us</h4>
                         
-                        <div class"social-link-a">
+                        <div>
                             <a href="https://www.facebook.com/programmingHero/" class="social-icon-link" target="_blank">
-                                <i class="fab fa-facebook-f"></i> facebook.
+                                <i class="fab fa-facebook-f"></i> Facebook
                             </a>
                             <a href="https://www.instagram.com/programminghero/?hl=en" class="social-icon-link" target="_blank">
-                                <i class="fab fa-instagram"></i> Instagram.
+                                <i class="fab fa-instagram"></i> Instagram
                             </a>
                             <a href="https://bd.linkedin.com/company/programminghero" class="social-icon-link" target="_blank">
-                                <i class="fab fa-linkedin-in"></i> Linkedin.
+                                <i class="fab fa-linkedin-in"></i> LinkedIn
                             </a>
                             <a href="https://www.youtube.com/c/ProgrammingHeroCommunity" class="social-icon-link" target="_blank">
-                                <i class="fab fa-youtube" style="color:black"></i> Youtube
+                                <i class="fab fa-youtube"></i> YouTube
                             </a>
                             <a href="https://wa.me/1234567890" class="social-icon-link" target="_blank">
-                                <i class="fab fa-whatsapp"></i> whatsapp
+                                <i class="fab fa-whatsapp"></i> WhatsApp
                             </a>
                         </div>
                     </div>
@@ -184,7 +208,10 @@ async function sendWelcomeEmail(userEmail, userName, fileTopic, fileId, appUrl) 
     return result;
     
   } catch (error) {
-    console.error('❌ Email sending failed:', error);
+    console.error('❌ Email sending failed:');
+    console.error('Error Code:', error.code);
+    console.error('Error Message:', error.message);
+    
     // Don't throw error - email failure shouldn't break registration
     return null;
   }

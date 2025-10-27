@@ -6,12 +6,15 @@ const { sendWelcomeEmail } = require('../utils/emailService');
 
 const router = express.Router();
 
-// User registration - UPDATED WITH FILE ID FOR EMAIL
+
+
+
+// User registration - UPDATED WITH NEW FIELDS
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, whatsapp, password, fileId } = req.body;
+    const { name, email, whatsapp, eduLevel, knowledgeLevel, password, fileId, sourcePlatform } = req.body;
 
-    console.log('🔵 REGISTRATION ATTEMPT:', { name, email, whatsapp, fileId });
+    console.log('🔵 REGISTRATION ATTEMPT:', { name, email, whatsapp, eduLevel, knowledgeLevel, fileId, sourcePlatform });
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
@@ -20,7 +23,7 @@ router.post('/register', async (req, res) => {
     }
 
     // Validate required fields
-    if (!name || !email || !whatsapp || !password) {
+    if (!name || !email || !whatsapp || !eduLevel || !knowledgeLevel || !password) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -33,12 +36,16 @@ router.post('/register', async (req, res) => {
     const saltRounds = 12;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    // Create user with WhatsApp
+    // Create user with new fields
     const user = new User({
       name,
       email,
       whatsapp,
-      passwordHash
+      eduLevel,
+      knowledgeLevel,
+      passwordHash,
+      sourcePlatform: sourcePlatform || 'Direct',
+      registeredForFile: fileId || null
     });
 
     await user.save();
@@ -53,7 +60,7 @@ router.post('/register', async (req, res) => {
 
     // ✅ SEND WELCOME EMAIL WITH DOWNLOAD LINK & SOCIAL MEDIA
     const appUrl = `${req.protocol}://${req.get('host')}`;
-    const fileTopic = "Your Requested File"; // You can customize this based on actual file data
+    const fileTopic = "Your Requested File";
     
     sendWelcomeEmail(email, name, fileTopic, fileId, appUrl).catch(console.error);
 
@@ -65,7 +72,9 @@ router.post('/register', async (req, res) => {
         id: user._id, 
         name: user.name, 
         email: user.email,
-        whatsapp: user.whatsapp 
+        whatsapp: user.whatsapp,
+        eduLevel: user.eduLevel,
+        knowledgeLevel: user.knowledgeLevel
       }
     });
     
@@ -79,6 +88,8 @@ router.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
+
+
 
 // User login
 router.post('/login', async (req, res) => {

@@ -22,10 +22,160 @@ let usersSortDirection = 'desc';
 let filesSearchTerm = '';
 let usersSearchTerm = '';
 
+// ✅ DECLARED FUNCTIONS FIRST
+function applyFilesFiltersAndSort() {
+    // Apply search filter
+    if (filesSearchTerm) {
+        const searchLower = filesSearchTerm.toLowerCase();
+        filteredFiles = allFiles.filter(file => 
+            file.topic.toLowerCase().includes(searchLower) ||
+            file.originalName.toLowerCase().includes(searchLower)
+        );
+    } else {
+        filteredFiles = [...allFiles];
+    }
+
+    // Apply sorting
+    filteredFiles.sort((a, b) => {
+        let aValue = a[filesSortField];
+        let bValue = b[filesSortField];
+        
+        if (filesSortField === 'uploadedAt' || filesSortField === 'createdAt') {
+            aValue = new Date(aValue);
+            bValue = new Date(bValue);
+        } else {
+            aValue = String(aValue).toLowerCase();
+            bValue = String(bValue).toLowerCase();
+        }
+        
+        if (aValue < bValue) return filesSortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return filesSortDirection === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    displayFiles(currentFilesPage);
+}
+
+function applyUsersFiltersAndSort() {
+    // Apply search filter
+    if (usersSearchTerm) {
+        const searchLower = usersSearchTerm.toLowerCase();
+        filteredUsers = allUsers.filter(user => 
+            user.name.toLowerCase().includes(searchLower) ||
+            user.email.toLowerCase().includes(searchLower) ||
+            (user.whatsapp && user.whatsapp.toLowerCase().includes(searchLower)) ||
+            (user.eduLevel && user.eduLevel.toLowerCase().includes(searchLower)) ||
+            (user.knowledgeLevel && user.knowledgeLevel.toLowerCase().includes(searchLower)) ||
+            (user.sourcePlatform && user.sourcePlatform.toLowerCase().includes(searchLower)) ||
+            (user.registeredForFile && user.registeredForFile.topic && user.registeredForFile.topic.toLowerCase().includes(searchLower))
+        );
+    } else {
+        filteredUsers = [...allUsers];
+    }
+
+    // Apply sorting
+    filteredUsers.sort((a, b) => {
+        let aValue = a[usersSortField];
+        let bValue = b[usersSortField];
+        
+        // Handle file topic sorting
+        if (usersSortField === 'fileTopic') {
+            aValue = a.registeredForFile ? a.registeredForFile.topic : '';
+            bValue = b.registeredForFile ? b.registeredForFile.topic : '';
+        }
+        
+        if (usersSortField === 'createdAt') {
+            aValue = new Date(aValue);
+            bValue = new Date(bValue);
+        } else {
+            aValue = String(aValue).toLowerCase();
+            bValue = String(bValue).toLowerCase();
+        }
+        
+        if (aValue < bValue) return usersSortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return usersSortDirection === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    displayUsers(currentUsersPage);
+}
+
+async function loadAllFiles() {
+    if (!checkAdminAuth()) return;
+
+    try {
+        console.log('🔄 Loading files...');
+        
+        const response = await fetch('/api/files', {
+            headers: {
+                'Authorization': `Bearer ${adminToken}`
+            }
+        });
+
+        console.log('📡 Files API response status:', response.status);
+
+        if (response.status === 401) {
+            console.log('❌ Unauthorized - clearing token');
+            localStorage.removeItem('adminToken');
+            window.location.href = '/admin';
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        allFiles = await response.json();
+        console.log(`✅ Loaded ${allFiles.length} files`);
+        
+        applyFilesFiltersAndSort();
+        
+    } catch (error) {
+        console.error('❌ Error loading files:', error);
+        showMessage('message', 'Error loading files: ' + error.message, 'error');
+    }
+}
+
+async function loadAllUsers() {
+    if (!checkAdminAuth()) return;
+
+    try {
+        console.log('🔄 Loading users...');
+        
+        const response = await fetch('/api/admin/users', {
+            headers: {
+                'Authorization': `Bearer ${adminToken}`
+            }
+        });
+
+        console.log('📡 Users API response status:', response.status);
+
+        if (response.status === 401) {
+            console.log('❌ Unauthorized - clearing token');
+            localStorage.removeItem('adminToken');
+            window.location.href = '/admin';
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        allUsers = await response.json();
+        console.log(`✅ Loaded ${allUsers.length} users`);
+        
+        applyUsersFiltersAndSort();
+        
+    } catch (error) {
+        console.error('❌ Error loading users:', error);
+        showMessage('message', 'Error loading users: ' + error.message, 'error');
+    }
+}
+
 // Check admin authentication
 function checkAdminAuth() {
     if (!adminToken) {
-        window.location.href = 'admin-login.html';
+        window.location.href = '/admin';
         return false;
     }
     return true;
@@ -58,7 +208,7 @@ document.getElementById('adminLoginForm')?.addEventListener('submit', async (e) 
             localStorage.setItem('admin', JSON.stringify(data.admin));
             
             setTimeout(() => {
-                window.location.href = 'admin-dashboard.html';
+                window.location.href = '/admin-dashboard';
             }, 1000);
         } else {
             showMessage('message', data.message, 'error');
@@ -67,7 +217,6 @@ document.getElementById('adminLoginForm')?.addEventListener('submit', async (e) 
         showMessage('message', 'Login failed. Please try again.', 'error');
     }
 });
-
 
 // File Upload - FIXED AUTO REFRESH ISSUE
 document.getElementById('uploadForm')?.addEventListener('submit', async (e) => {
@@ -127,78 +276,105 @@ document.getElementById('uploadForm')?.addEventListener('submit', async (e) => {
     }
 });
 
-// Load all files from API - FIXED RELOAD ISSUE
-async function loadAllFiles() {
-    if (!checkAdminAuth()) return;
-
+// Copy generated link function
+function copyGeneratedLink() {
+    const linkInput = document.getElementById('generatedLink');
+    linkInput.select();
+    linkInput.setSelectionRange(0, 99999);
+    
     try {
-        const response = await fetch('/api/files', {
-            headers: {
-                'Authorization': `Bearer ${adminToken}`
-            }
+        navigator.clipboard.writeText(linkInput.value).then(() => {
+            const copyBtn = event.target;
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = 'Copied!';
+            copyBtn.style.background = '#28a745';
+            
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+                copyBtn.style.background = '';
+            }, 2000);
         });
-
-        if (response.ok) {
-            allFiles = await response.json();
-            applyFilesFiltersAndSort();
-            console.log('Files list reloaded successfully');
-        } else {
-            throw new Error('Failed to load files');
-        }
+    } catch (err) {
+        document.execCommand('copy');
+        const copyBtn = event.target;
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        copyBtn.style.background = '#28a745';
         
-    } catch (error) {
-        console.error('Error loading files:', error);
-        showMessage('message', 'Error loading files', 'error');
+        setTimeout(() => {
+            copyBtn.textContent = originalText;
+            copyBtn.style.background = '';
+        }, 2000);
     }
 }
 
+// Copy link from table function
+function copyTableLink(link) {
+    try {
+        navigator.clipboard.writeText(link).then(() => {
+            showMessage('message', 'Link copied to clipboard!', 'success');
+        });
+    } catch (err) {
+        const tempInput = document.createElement('input');
+        tempInput.value = link;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        showMessage('message', 'Link copied to clipboard!', 'success');
+    }
+}
 
-// Apply filters and sort to users - UPDATED FOR FILE TOPIC SEARCH
-function applyUsersFiltersAndSort() {
-    // Apply search filter
-    if (usersSearchTerm) {
-        const searchLower = usersSearchTerm.toLowerCase();
-        filteredUsers = allUsers.filter(user => 
-            user.name.toLowerCase().includes(searchLower) ||
-            user.email.toLowerCase().includes(searchLower) ||
-            (user.whatsapp && user.whatsapp.toLowerCase().includes(searchLower)) ||
-            (user.eduLevel && user.eduLevel.toLowerCase().includes(searchLower)) ||
-            (user.knowledgeLevel && user.knowledgeLevel.toLowerCase().includes(searchLower)) ||
-            (user.sourcePlatform && user.sourcePlatform.toLowerCase().includes(searchLower)) ||
-            (user.registeredForFile && user.registeredForFile.topic.toLowerCase().includes(searchLower))
-        );
+// Display files with pagination
+function displayFiles(page = 1) {
+    const totalFiles = filteredFiles.length;
+    const totalPages = Math.ceil(totalFiles / filesPerPage);
+    const startIndex = (page - 1) * filesPerPage;
+    const endIndex = startIndex + filesPerPage;
+    const filesToDisplay = filteredFiles.slice(startIndex, endIndex);
+
+    const filesTableBody = document.getElementById('filesTableBody');
+    
+    if (filesToDisplay.length === 0) {
+        filesTableBody.innerHTML = `
+            <tr>
+                <td colspan="5" class="no-results">
+                    ${filesSearchTerm ? 'No files found matching your search' : 'No files uploaded yet'}
+                </td>
+            </tr>
+        `;
     } else {
-        filteredUsers = [...allUsers];
+        filesTableBody.innerHTML = filesToDisplay.map(file => `
+            <tr class="${selectedFiles.has(file._id) ? 'selected' : ''}">
+                <td>
+                    <input type="checkbox" 
+                           ${selectedFiles.has(file._id) ? 'checked' : ''}
+                           onchange="toggleFileSelection('${file._id}', this.checked)">
+                </td>
+                <td>${file.topic}</td>
+                <td>${file.originalName}</td>
+                <td>
+                    <div class="link-display">
+                        <span class="link-text">${window.location.origin}/register?fileId=${file._id}</span>
+                        <button onclick="copyTableLink('${window.location.origin}/register?fileId=${file._id}')" class="copy-btn">
+                            Copy
+                        </button>
+                    </div>
+                </td>
+                <td>${new Date(file.uploadedAt).toLocaleDateString()}</td>
+            </tr>
+        `).join('');
     }
 
-    // Apply sorting
-    filteredUsers.sort((a, b) => {
-        let aValue = a[usersSortField];
-        let bValue = b[usersSortField];
-        
-        // Handle file topic sorting
-        if (usersSortField === 'fileTopic') {
-            aValue = a.registeredForFile ? a.registeredForFile.topic : '';
-            bValue = b.registeredForFile ? b.registeredForFile.topic : '';
-        }
-        
-        if (usersSortField === 'createdAt') {
-            aValue = new Date(aValue);
-            bValue = new Date(bValue);
-        } else {
-            aValue = String(aValue).toLowerCase();
-            bValue = String(bValue).toLowerCase();
-        }
-        
-        if (aValue < bValue) return usersSortDirection === 'asc' ? -1 : 1;
-        if (aValue > bValue) return usersSortDirection === 'asc' ? 1 : -1;
-        return 0;
-    });
-
-    displayUsers(currentUsersPage);
+    // Update sorting indicators
+    updateSortIndicators('files');
+    
+    // Generate pagination
+    generatePagination('filesPagination', page, totalPages, 'files');
+    
+    // Update bulk actions
+    updateFilesBulkActions();
 }
-
-
 
 // Display users with pagination - FIXED UNDEFINED FILE TOPIC
 function displayUsers(page = 1) {
@@ -251,7 +427,6 @@ function displayUsers(page = 1) {
     // Update bulk actions
     updateUsersBulkActions();
 }
-
 
 // Update sorting indicators in table headers
 function updateSortIndicators(type) {
@@ -358,12 +533,16 @@ function toggleSelectAllUsers(selected) {
 // Bulk actions
 function updateFilesBulkActions() {
     const bulkActions = document.getElementById('filesBulkActions');
-    bulkActions.disabled = selectedFiles.size === 0;
+    if (bulkActions) {
+        bulkActions.disabled = selectedFiles.size === 0;
+    }
 }
 
 function updateUsersBulkActions() {
     const bulkActions = document.getElementById('usersBulkActions');
-    bulkActions.disabled = selectedUsers.size === 0;
+    if (bulkActions) {
+        bulkActions.disabled = selectedUsers.size === 0;
+    }
 }
 
 function handleFilesBulkAction(action) {
@@ -452,12 +631,9 @@ function exportSelectedUsers() {
     showMessage('message', `Exported ${selectedUsers.size} user(s)`, 'success');
 }
 
-
-
-
 // CSV export utilities - UPDATED WITH NEW FIELDS
 function convertToCSV(data) {
-    const headers = ['Name', 'Email', 'WhatsApp Number', 'Edu Level', 'Knowledge Level', 'Source Platform', 'Registration Date'];
+    const headers = ['Name', 'Email', 'WhatsApp Number', 'Edu Level', 'Knowledge Level', 'Source Platform', 'File Topic', 'Registration Date'];
     const csvRows = [headers.join(',')];
     
     data.forEach(item => {
@@ -468,6 +644,7 @@ function convertToCSV(data) {
             `"${item.eduLevel || 'N/A'}"`,
             `"${item.knowledgeLevel || 'N/A'}"`,
             `"${item.sourcePlatform || 'Direct'}"`,
+            `"${(item.registeredForFile && item.registeredForFile.topic) ? item.registeredForFile.topic : 'N/A'}"`,
             `"${new Date(item.createdAt).toLocaleString()}"`
         ];
         csvRows.push(row.join(','));
@@ -475,7 +652,6 @@ function convertToCSV(data) {
     
     return csvRows.join('\n');
 }
-
 
 function downloadCSV(csvContent, filename) {
     const blob = new Blob([csvContent], { type: 'text/csv' });
@@ -596,9 +772,6 @@ async function exportUsers() {
     }
 }
 
-
-
-
 // Admin logout
 function adminLogout() {
     localStorage.removeItem('adminToken');
@@ -621,12 +794,20 @@ function showMessage(elementId, message, type) {
     }
 }
 
-// Initialize dashboard
-if (window.location.pathname.includes('admin-dashboard.html')) {
+// Initialize dashboard - FIXED VERSION
+if (window.location.pathname.includes('admin-dashboard') || window.location.pathname === '/admin-dashboard') {
     document.addEventListener('DOMContentLoaded', () => {
+        console.log('🔄 Initializing admin dashboard...');
+        
         if (checkAdminAuth()) {
-            loadAllFiles();
-            loadAllUsers();
+            console.log('✅ Admin authenticated, loading data...');
+            
+            // Load data with small delay to ensure DOM is ready
+            setTimeout(() => {
+                loadAllFiles();
+                loadAllUsers();
+                startAutoRefresh();
+            }, 100);
         }
     });
 }
@@ -634,25 +815,14 @@ if (window.location.pathname.includes('admin-dashboard.html')) {
 // Auto refresh users every 30 seconds
 function startAutoRefresh() {
     setInterval(() => {
-        if (window.location.pathname.includes('admin-dashboard.html')) {
+        if (window.location.pathname.includes('admin-dashboard') || window.location.pathname === '/admin-dashboard') {
             loadAllUsers();
             console.log('Auto-refreshed users list');
         }
     }, 30000); // 30 seconds
 }
 
-// Initialize dashboard with auto-refresh
-if (window.location.pathname.includes('admin-dashboard.html')) {
-    document.addEventListener('DOMContentLoaded', () => {
-        if (checkAdminAuth()) {
-            loadAllFiles();
-            loadAllUsers();
-            startAutoRefresh(); // Start auto-refresh
-        }
-    });
-}
-
-// Copy button style fix - add this in admin.js
+// Copy button style fix
 function fixCopyButtonStyle() {
     const copyButton = document.querySelector('#downloadLink .btn-primary');
     if (copyButton) {
@@ -685,6 +855,3 @@ function fixCopyButtonStyle() {
 document.addEventListener('DOMContentLoaded', function() {
     fixCopyButtonStyle();
 });
-
-// Also call when upload form is submitted (when download link appears)
-// Add this in your existing upload form success handler

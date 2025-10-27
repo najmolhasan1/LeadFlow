@@ -94,14 +94,20 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Get all users (admin only) - UPDATED TO INCLUDE WHATSAPP
+
+
+
+// Get all users (admin only) - UPDATED WITH FILE POPULATION
 router.get('/users', auth, async (req, res) => {
   try {
     if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    const users = await User.find({ role: 'user' }).select('-passwordHash');
+    const users = await User.find({ role: 'user' })
+      .select('-passwordHash')
+      .populate('registeredForFile', 'topic fileName');
+    
     res.json(users);
   } catch (error) {
     console.error('Get users error:', error);
@@ -109,14 +115,18 @@ router.get('/users', auth, async (req, res) => {
   }
 });
 
-// Export users as CSV - UPDATED TO INCLUDE WHATSAPP
+
+
+// Export users as CSV - UPDATED WITH NEW FIELDS
 router.get('/users/export', auth, async (req, res) => {
   try {
     if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    const users = await User.find({ role: 'user' }).select('name email whatsapp createdAt');
+    const users = await User.find({ role: 'user' })
+      .select('name email whatsapp eduLevel knowledgeLevel sourcePlatform createdAt')
+      .populate('registeredForFile', 'topic');
     
     const csvWriter = createCsvWriter({
       path: 'temp/users.csv',
@@ -124,11 +134,26 @@ router.get('/users/export', auth, async (req, res) => {
         { id: 'name', title: 'Name' },
         { id: 'email', title: 'Email' },
         { id: 'whatsapp', title: 'WhatsApp Number' },
-        { id: 'createdAt', title: 'Registration Date' }
+        { id: 'eduLevel', title: 'Education Level' },
+        { id: 'knowledgeLevel', title: 'Knowledge Level' },
+        { id: 'sourcePlatform', title: 'Source Platform' },
+        { id: 'registeredForFile', title: 'Registered For File' },
+        { id: 'createdAt', title: 'Registration Date & Time' }
       ]
     });
 
-    await csvWriter.writeRecords(users);
+    const csvData = users.map(user => ({
+      name: user.name,
+      email: user.email,
+      whatsapp: user.whatsapp,
+      eduLevel: user.eduLevel,
+      knowledgeLevel: user.knowledgeLevel,
+      sourcePlatform: user.sourcePlatform,
+      registeredForFile: user.registeredForFile ? user.registeredForFile.topic : 'N/A',
+      createdAt: new Date(user.createdAt).toLocaleString()
+    }));
+
+    await csvWriter.writeRecords(csvData);
     
     res.download('temp/users.csv', 'users.csv', (err) => {
       if (err) {
@@ -141,6 +166,7 @@ router.get('/users/export', auth, async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
+
 
 // Get admin profile (protected)
 router.get('/profile', auth, async (req, res) => {

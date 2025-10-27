@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -11,6 +10,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    trim: true,
     lowercase: true
   },
   whatsapp: {
@@ -18,24 +18,37 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  eduLevel: {
+    type: String,
+    required: true,
+    enum: ['SSC/HSC Level', 'Honors Level', 'Diploma/Polytechnic', 'Madrasha Level', 'Others']
+  },
+  knowledgeLevel: {
+    type: String,
+    required: true,
+    enum: ['Noob', 'Beginner', 'Mid Level', 'Expert Level', 'Job Holder']
+  },
   passwordHash: {
     type: String,
     required: true
   },
   role: {
     type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
+    default: 'user',
+    enum: ['user', 'admin']
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
+  sourcePlatform: {
+    type: String,
+    default: 'Direct'
+  },
+  registeredForFile: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'File', // ✅ এই লাইন যোগ করুন
+    default: null
   }
+}, {
+  timestamps: true,
+  strictPopulate: false // ✅ এই লাইন যোগ করুন Railway-এর জন্য
 });
-
-// Fix: Use proper bcrypt comparison
-userSchema.methods.correctPassword = async function(candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.passwordHash);
-};
 
 module.exports = mongoose.model('User', userSchema);

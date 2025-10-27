@@ -68,7 +68,8 @@ document.getElementById('adminLoginForm')?.addEventListener('submit', async (e) 
     }
 });
 
-// File Upload
+
+// File Upload - FIXED AUTO REFRESH ISSUE
 document.getElementById('uploadForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -92,13 +93,30 @@ document.getElementById('uploadForm')?.addEventListener('submit', async (e) => {
         if (response.ok) {
             showMessage('message', 'File uploaded successfully! Download link generated.', 'success');
             document.getElementById('uploadForm').reset();
-            loadAllFiles(); // Reload all files
+            
+            // FIX: Force reload files list after successful upload
+            await loadAllFiles();
             
             const linkDiv = document.getElementById('downloadLink');
             const linkInput = document.getElementById('generatedLink');
             
-            const registrationLink = `${window.location.origin}/user-register.html?fileId=${data.file.id}`;
-            linkInput.value = registrationLink;
+            // Generate links with different sources
+            const fileId = data.file.id;
+            const baseUrl = window.location.origin;
+            
+            const links = `
+📱 Social Media Links for Sharing:
+
+🔵 Facebook: ${baseUrl}/register?fileId=${fileId}&source=Facebook
+🔴 YouTube: ${baseUrl}/register?fileId=${fileId}&source=YouTube
+🔵 LinkedIn: ${baseUrl}/register?fileId=${fileId}&source=LinkedIn
+🟢 WhatsApp: ${baseUrl}/register?fileId=${fileId}&source=WhatsApp
+🟣 Instagram: ${baseUrl}/register?fileId=${fileId}&source=Instagram
+🔵 Twitter: ${baseUrl}/register?fileId=${fileId}&source=Twitter
+⚪ Direct: ${baseUrl}/register?fileId=${fileId}&source=Direct
+            `;
+            
+            linkInput.value = links;
             linkDiv.style.display = 'block';
             
         } else {
@@ -109,56 +127,7 @@ document.getElementById('uploadForm')?.addEventListener('submit', async (e) => {
     }
 });
 
-// Copy generated link function
-function copyGeneratedLink() {
-    const linkInput = document.getElementById('generatedLink');
-    linkInput.select();
-    linkInput.setSelectionRange(0, 99999);
-    
-    try {
-        navigator.clipboard.writeText(linkInput.value).then(() => {
-            const copyBtn = event.target;
-            const originalText = copyBtn.textContent;
-            copyBtn.textContent = 'Copied!';
-            copyBtn.style.background = '#28a745';
-            
-            setTimeout(() => {
-                copyBtn.textContent = originalText;
-                copyBtn.style.background = '';
-            }, 2000);
-        });
-    } catch (err) {
-        document.execCommand('copy');
-        const copyBtn = event.target;
-        const originalText = copyBtn.textContent;
-        copyBtn.textContent = 'Copied!';
-        copyBtn.style.background = '#28a745';
-        
-        setTimeout(() => {
-            copyBtn.textContent = originalText;
-            copyBtn.style.background = '';
-        }, 2000);
-    }
-}
-
-// Copy link from table function
-function copyTableLink(link) {
-    try {
-        navigator.clipboard.writeText(link).then(() => {
-            showMessage('message', 'Link copied to clipboard!', 'success');
-        });
-    } catch (err) {
-        const tempInput = document.createElement('input');
-        tempInput.value = link;
-        document.body.appendChild(tempInput);
-        tempInput.select();
-        document.execCommand('copy');
-        document.body.removeChild(tempInput);
-        showMessage('message', 'Link copied to clipboard!', 'success');
-    }
-}
-
-// Load all files from API
+// Load all files from API - FIXED RELOAD ISSUE
 async function loadAllFiles() {
     if (!checkAdminAuth()) return;
 
@@ -169,8 +138,13 @@ async function loadAllFiles() {
             }
         });
 
-        allFiles = await response.json();
-        applyFilesFiltersAndSort();
+        if (response.ok) {
+            allFiles = await response.json();
+            applyFilesFiltersAndSort();
+            console.log('Files list reloaded successfully');
+        } else {
+            throw new Error('Failed to load files');
+        }
         
     } catch (error) {
         console.error('Error loading files:', error);
@@ -178,61 +152,8 @@ async function loadAllFiles() {
     }
 }
 
-// Load all users from API - UPDATED TO INCLUDE WHATSAPP
-async function loadAllUsers() {
-    if (!checkAdminAuth()) return;
 
-    try {
-        const response = await fetch('/api/admin/users', {
-            headers: {
-                'Authorization': `Bearer ${adminToken}`
-            }
-        });
-
-        allUsers = await response.json();
-        applyUsersFiltersAndSort();
-        
-    } catch (error) {
-        console.error('Error loading users:', error);
-        showMessage('message', 'Error loading users', 'error');
-    }
-}
-
-// Apply filters and sort to files
-function applyFilesFiltersAndSort() {
-    // Apply search filter
-    if (filesSearchTerm) {
-        const searchLower = filesSearchTerm.toLowerCase();
-        filteredFiles = allFiles.filter(file => 
-            file.topic.toLowerCase().includes(searchLower) ||
-            file.originalName.toLowerCase().includes(searchLower)
-        );
-    } else {
-        filteredFiles = [...allFiles];
-    }
-
-    // Apply sorting
-    filteredFiles.sort((a, b) => {
-        let aValue = a[filesSortField];
-        let bValue = b[filesSortField];
-        
-        if (filesSortField === 'uploadedAt' || filesSortField === 'createdAt') {
-            aValue = new Date(aValue);
-            bValue = new Date(bValue);
-        } else {
-            aValue = String(aValue).toLowerCase();
-            bValue = String(bValue).toLowerCase();
-        }
-        
-        if (aValue < bValue) return filesSortDirection === 'asc' ? -1 : 1;
-        if (aValue > bValue) return filesSortDirection === 'asc' ? 1 : -1;
-        return 0;
-    });
-
-    displayFiles(currentFilesPage);
-}
-
-// Apply filters and sort to users - UPDATED FOR WHATSAPP SEARCH/SORT
+// Apply filters and sort to users - UPDATED FOR FILE TOPIC SEARCH
 function applyUsersFiltersAndSort() {
     // Apply search filter
     if (usersSearchTerm) {
@@ -240,7 +161,11 @@ function applyUsersFiltersAndSort() {
         filteredUsers = allUsers.filter(user => 
             user.name.toLowerCase().includes(searchLower) ||
             user.email.toLowerCase().includes(searchLower) ||
-            (user.whatsapp && user.whatsapp.toLowerCase().includes(searchLower))
+            (user.whatsapp && user.whatsapp.toLowerCase().includes(searchLower)) ||
+            (user.eduLevel && user.eduLevel.toLowerCase().includes(searchLower)) ||
+            (user.knowledgeLevel && user.knowledgeLevel.toLowerCase().includes(searchLower)) ||
+            (user.sourcePlatform && user.sourcePlatform.toLowerCase().includes(searchLower)) ||
+            (user.registeredForFile && user.registeredForFile.topic.toLowerCase().includes(searchLower))
         );
     } else {
         filteredUsers = [...allUsers];
@@ -250,6 +175,12 @@ function applyUsersFiltersAndSort() {
     filteredUsers.sort((a, b) => {
         let aValue = a[usersSortField];
         let bValue = b[usersSortField];
+        
+        // Handle file topic sorting
+        if (usersSortField === 'fileTopic') {
+            aValue = a.registeredForFile ? a.registeredForFile.topic : '';
+            bValue = b.registeredForFile ? b.registeredForFile.topic : '';
+        }
         
         if (usersSortField === 'createdAt') {
             aValue = new Date(aValue);
@@ -267,58 +198,9 @@ function applyUsersFiltersAndSort() {
     displayUsers(currentUsersPage);
 }
 
-// Display files with pagination
-function displayFiles(page = 1) {
-    const totalFiles = filteredFiles.length;
-    const totalPages = Math.ceil(totalFiles / filesPerPage);
-    const startIndex = (page - 1) * filesPerPage;
-    const endIndex = startIndex + filesPerPage;
-    const filesToDisplay = filteredFiles.slice(startIndex, endIndex);
 
-    const filesTableBody = document.getElementById('filesTableBody');
-    
-    if (filesToDisplay.length === 0) {
-        filesTableBody.innerHTML = `
-            <tr>
-                <td colspan="5" class="no-results">
-                    ${filesSearchTerm ? 'No files found matching your search' : 'No files uploaded yet'}
-                </td>
-            </tr>
-        `;
-    } else {
-        filesTableBody.innerHTML = filesToDisplay.map(file => `
-            <tr class="${selectedFiles.has(file._id) ? 'selected' : ''}">
-                <td>
-                    <input type="checkbox" 
-                           ${selectedFiles.has(file._id) ? 'checked' : ''}
-                           onchange="toggleFileSelection('${file._id}', this.checked)">
-                </td>
-                <td>${file.topic}</td>
-                <td>${file.originalName}</td>
-                <td>
-                    <div class="link-display">
-                        <span class="link-text">${window.location.origin}/user-register.html?fileId=${file._id}</span>
-                        <button onclick="copyTableLink('${window.location.origin}/user-register.html?fileId=${file._id}')" class="copy-btn">
-                            Copy
-                        </button>
-                    </div>
-                </td>
-                <td>${new Date(file.uploadedAt).toLocaleDateString()}</td>
-            </tr>
-        `).join('');
-    }
 
-    // Update sorting indicators
-    updateSortIndicators('files');
-    
-    // Generate pagination
-    generatePagination('filesPagination', page, totalPages, 'files');
-    
-    // Update bulk actions
-    updateFilesBulkActions();
-}
-
-// Display users with pagination - UPDATED TO SHOW WHATSAPP
+// Display users with pagination - FIXED UNDEFINED FILE TOPIC
 function displayUsers(page = 1) {
     const totalUsers = filteredUsers.length;
     const totalPages = Math.ceil(totalUsers / usersPerPage);
@@ -331,7 +213,7 @@ function displayUsers(page = 1) {
     if (usersToDisplay.length === 0) {
         usersTableBody.innerHTML = `
             <tr>
-                <td colspan="5" class="no-results">
+                <td colspan="10" class="no-results">
                     ${usersSearchTerm ? 'No users found matching your search' : 'No users registered yet'}
                 </td>
             </tr>
@@ -347,7 +229,15 @@ function displayUsers(page = 1) {
                 <td>${user.name}</td>
                 <td>${user.email}</td>
                 <td>${user.whatsapp || 'N/A'}</td>
-                <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+                <td>${user.eduLevel || 'N/A'}</td>
+                <td>${user.knowledgeLevel || 'N/A'}</td>
+                <td>${user.registeredForFile && user.registeredForFile.topic ? user.registeredForFile.topic : 'N/A'}</td>
+                <td>
+                    <span class="platform-badge ${user.sourcePlatform?.toLowerCase() || 'direct'}">
+                        ${user.sourcePlatform || 'Direct'}
+                    </span>
+                </td>
+                <td>${new Date(user.createdAt).toLocaleString()}</td>
             </tr>
         `).join('');
     }
@@ -361,6 +251,7 @@ function displayUsers(page = 1) {
     // Update bulk actions
     updateUsersBulkActions();
 }
+
 
 // Update sorting indicators in table headers
 function updateSortIndicators(type) {
@@ -561,9 +452,12 @@ function exportSelectedUsers() {
     showMessage('message', `Exported ${selectedUsers.size} user(s)`, 'success');
 }
 
-// CSV export utilities - UPDATED TO INCLUDE WHATSAPP
+
+
+
+// CSV export utilities - UPDATED WITH NEW FIELDS
 function convertToCSV(data) {
-    const headers = ['Name', 'Email', 'WhatsApp Number', 'Registration Date'];
+    const headers = ['Name', 'Email', 'WhatsApp Number', 'Edu Level', 'Knowledge Level', 'Source Platform', 'Registration Date'];
     const csvRows = [headers.join(',')];
     
     data.forEach(item => {
@@ -571,13 +465,17 @@ function convertToCSV(data) {
             `"${item.name}"`,
             `"${item.email}"`,
             `"${item.whatsapp || 'N/A'}"`,
-            `"${new Date(item.createdAt).toLocaleDateString()}"`
+            `"${item.eduLevel || 'N/A'}"`,
+            `"${item.knowledgeLevel || 'N/A'}"`,
+            `"${item.sourcePlatform || 'Direct'}"`,
+            `"${new Date(item.createdAt).toLocaleString()}"`
         ];
         csvRows.push(row.join(','));
     });
     
     return csvRows.join('\n');
 }
+
 
 function downloadCSV(csvContent, filename) {
     const blob = new Blob([csvContent], { type: 'text/csv' });
@@ -698,11 +596,14 @@ async function exportUsers() {
     }
 }
 
+
+
+
 // Admin logout
 function adminLogout() {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('admin');
-    window.location.href = 'admin-login.html';
+    window.location.href = '/admin';
 }
 
 function showMessage(elementId, message, type) {

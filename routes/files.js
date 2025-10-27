@@ -12,16 +12,23 @@ if (!fs.existsSync('uploads')) {
   fs.mkdirSync('uploads');
 }
 
-// Multer configuration
+
+
+
+// Multer configuration - UPDATED FOR BENGALI FILENAME SUPPORT
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/');
   },
   filename: (req, file, cb) => {
     // Use original filename without modification for storage
-    cb(null, Date.now() + '-' + file.originalname);
+    // Preserve Bengali characters in filename
+    const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+    cb(null, Date.now() + '-' + originalName);
   }
 });
+
+
 
 const upload = multer({
   storage: storage,

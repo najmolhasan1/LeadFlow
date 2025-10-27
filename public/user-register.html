@@ -257,7 +257,8 @@
         <!-- Navigation -->
         <section class="nav-section">
             <div class="logo">LeadFlow <span style="color: #E954E2;">.</span></div>
-            <a href="user-login.html" class="login-btn"> <i class="fa-solid fa-arrow-right-to-bracket" style="margin-right: 10px;"></i> Login</a>
+            <!-- <a href="user-login.html" class="login-btn"> <i class="fa-solid fa-arrow-right-to-bracket" style="margin-right: 10px;"></i> Login</a> -->
+             <a href="/login" class="login-btn"> <i class="fa-solid fa-arrow-right-to-bracket" style="margin-right: 10px;"></i> Login</a>
         </section>
 
         <!-- Main Content -->
@@ -287,6 +288,32 @@
                                        placeholder="+8801XXXXXXXXX" pattern="[+][0-9]{11,14}"
                                        class="input-style">
                             </div>
+
+                            <!-- এই কোডটি existing form-group এর নিচে পেস্ট করুন -->
+
+<div class="form-group">
+    <label for="eduLevel">আপনি কোন লেভেলে পড়াশোনা করছেন? *</label>
+    <select id="eduLevel" name="eduLevel" required class="input-style">
+        <option value="">Select Education Level</option>
+        <option value="SSC/HSC Level">SSC/HSC Level</option>
+        <option value="Honors Level">Honors Level</option>
+        <option value="Diploma/Polytechnic">Diploma/Polytechnic</option>
+        <option value="Madrasha Level">Madrasha Level</option>
+        <option value="Others">Others</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="knowledgeLevel">কোডিং/প্রোগ্রামিং এ আপনি কোন লেভেলে আছেন? *</label>
+    <select id="knowledgeLevel" name="knowledgeLevel" required class="input-style">
+        <option value="">Select Knowledge Level</option>
+        <option value="Noob">Noob</option>
+        <option value="Beginner">Beginner</option>
+        <option value="Mid Level">Mid Level</option>
+        <option value="Expert Level">Expert Level</option>
+        <option value="Job Holder">Job Holder</option>
+    </select>
+</div>
                             
                             <div class="form-group">
                                 <label for="password">Password *</label>
@@ -350,75 +377,153 @@
         console.log('File ID detected:', fileId);
     }
 
-    // User Registration - AUTO LOGIN & DOWNLOAD - UPDATED WITH FILEID
-    document.getElementById('registerForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
+    // // User Registration - AUTO LOGIN & DOWNLOAD - UPDATED WITH FILEID
+    // document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    //     e.preventDefault();
         
-        const submitBtn = document.getElementById('submitBtn');
-        const btnText = submitBtn.querySelector('.btn-text');
-        const btnLoading = submitBtn.querySelector('.btn-loading');
+    //     const submitBtn = document.getElementById('submitBtn');
+    //     const btnText = submitBtn.querySelector('.btn-text');
+    //     const btnLoading = submitBtn.querySelector('.btn-loading');
         
-        // Show loading state
-        btnText.style.display = 'none';
-        btnLoading.style.display = 'flex';
-        submitBtn.disabled = true;
+    //     // Show loading state
+    //     btnText.style.display = 'none';
+    //     btnLoading.style.display = 'flex';
+    //     submitBtn.disabled = true;
 
-        // Get fileId from URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const fileId = urlParams.get('fileId');
+    //     // Get fileId from URL parameters
+    //     const urlParams = new URLSearchParams(window.location.search);
+    //     const fileId = urlParams.get('fileId');
 
-        const formData = {
-            name: document.getElementById('name').value,
-            email: document.getElementById('email').value,
-            whatsapp: document.getElementById('whatsapp').value,
-            password: document.getElementById('password').value,
-            fileId: fileId // ✅ Send fileId to backend for email
-        };
+    //     const formData = {
+    //         name: document.getElementById('name').value,
+    //         email: document.getElementById('email').value,
+    //         whatsapp: document.getElementById('whatsapp').value,
+    //         password: document.getElementById('password').value,
+    //         fileId: fileId // ✅ Send fileId to backend for email
+    //     };
 
-        console.log('Registration attempt with fileId:', formData);
+    //     console.log('Registration attempt with fileId:', formData);
 
-        try {
-            const response = await fetch('/api/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
+    //     try {
+    //         const response = await fetch('/api/auth/register', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 },
+    //                 body: JSON.stringify(formData)
+    //             });
 
-            const data = await response.json();
-            console.log('Registration response:', data);
+    //         const data = await response.json();
+    //         console.log('Registration response:', data);
 
-            if (response.ok && data.success) {
-                showMessage('✅ Registration successful! Check your email for download link.', 'success');
+    //         if (response.ok && data.success) {
+    //             showMessage('✅ Registration successful! Check your email for download link.', 'success');
                 
-                // ✅ AUTO LOGIN: Store token immediately
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
+    //             // ✅ AUTO LOGIN: Store token immediately
+    //             localStorage.setItem('token', data.token);
+    //             localStorage.setItem('user', JSON.stringify(data.user));
                 
-                // ✅ AUTO REDIRECT to download page
-                setTimeout(() => {
-                    if (fileId) {
-                        window.location.href = `/download/${fileId}`;
-                    } else {
-                        window.location.href = 'index.html';
-                    }
-                }, 1500);
+    //             // ✅ AUTO REDIRECT to download page
+    //             setTimeout(() => {
+    //                 if (fileId) {
+    //                     window.location.href = `/download/${fileId}`;
+    //                 } else {
+    //                     window.location.href = 'index.html';
+    //                 }
+    //             }, 1500);
                 
-            } else {
-                showMessage('❌ ' + (data.message || 'Registration failed'), 'error');
-                btnText.style.display = 'flex';
-                btnLoading.style.display = 'none';
-                submitBtn.disabled = false;
-            }
-        } catch (error) {
-            console.error('Registration error:', error);
-            showMessage('❌ Network error. Please try again.', 'error');
+    //         } else {
+    //             showMessage('❌ ' + (data.message || 'Registration failed'), 'error');
+    //             btnText.style.display = 'flex';
+    //             btnLoading.style.display = 'none';
+    //             submitBtn.disabled = false;
+    //         }
+    //     } catch (error) {
+    //         console.error('Registration error:', error);
+    //         showMessage('❌ Network error. Please try again.', 'error');
+    //         btnText.style.display = 'flex';
+    //         btnLoading.style.display = 'none';
+    //         submitBtn.disabled = false;
+    //     }
+    // });
+
+
+// User Registration - AUTO LOGIN & DOWNLOAD - UPDATED WITH NEW FIELDS
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = submitBtn.querySelector('.btn-text');
+    const btnLoading = submitBtn.querySelector('.btn-loading');
+    
+    // Show loading state
+    btnText.style.display = 'none';
+    btnLoading.style.display = 'flex';
+    submitBtn.disabled = true;
+
+    // Get fileId from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const fileId = urlParams.get('fileId');
+    const sourcePlatform = urlParams.get('source') || 'Direct';
+
+    const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        whatsapp: document.getElementById('whatsapp').value,
+        eduLevel: document.getElementById('eduLevel').value,
+        knowledgeLevel: document.getElementById('knowledgeLevel').value,
+        password: document.getElementById('password').value,
+        fileId: fileId,
+        sourcePlatform: sourcePlatform
+    };
+
+    console.log('Registration attempt with new fields:', formData);
+
+    try {
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        console.log('Registration response:', data);
+
+        if (response.ok && data.success) {
+            showMessage('✅ Registration successful! Check your email for download link.', 'success');
+            
+            // ✅ AUTO LOGIN: Store token immediately
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            
+            // ✅ AUTO REDIRECT to download page
+            setTimeout(() => {
+                if (fileId) {
+                    window.location.href = `/download/${fileId}`;
+                } else {
+                    window.location.href = '/';
+                }
+            }, 1500);
+            
+        } else {
+            showMessage('❌ ' + (data.message || 'Registration failed'), 'error');
             btnText.style.display = 'flex';
             btnLoading.style.display = 'none';
             submitBtn.disabled = false;
         }
-    });
+    } catch (error) {
+        console.error('Registration error:', error);
+        showMessage('❌ Network error. Please try again.', 'error');
+        btnText.style.display = 'flex';
+        btnLoading.style.display = 'none';
+        submitBtn.disabled = false;
+    }
+});
+
+
+
 
     function showMessage(message, type) {
         const messageDiv = document.getElementById('message');

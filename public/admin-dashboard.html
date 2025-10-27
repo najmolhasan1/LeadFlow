@@ -414,7 +414,12 @@
 
             <section class="nav-section">
             <div class="logo">LeadFlow <span style="color: #E954E2;">.</span></div>
-            <div class=""> <button onclick="adminLogout()" class=" prim-btn logout-btn"> <i class="fas fa-sign-out-alt"></i> Logout</button></div>
+            <div class=""> 
+                <!-- <button onclick="adminLogout()" class=" prim-btn logout-btn"> <i class="fas fa-sign-out-alt"></i> Logout</button> -->
+                 <!-- Navigation -->
+ <button onclick="adminLogout()" class=" prim-btn logout-btn"> <i class="fas fa-sign-out-alt"></i> Logout</button>
+            
+            </div>
         </section>
     <div class="container">
 
@@ -504,68 +509,79 @@
             <div id="filesPagination" class="pagination-container"></div>
         </div>
 
-        <!-- Users List Section - UPDATED WITH WHATSAPP COLUMN -->
-        <div class="section-container">
-            <div class="section-header">
-                <h2>Registered Users</h2>
-                <div class="controls-container">
-                     
-                    <!-- Search -->
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="usersSearch" placeholder="Search users..." onkeyup="handleUsersSearch()">
-                    </div>
-                    <!-- Items Per Page -->
-                    <select id="usersPerPage" onchange="changeUsersPerPage(this.value)" class="items-per-page">
-                        <option value="10">10 per page</option>
-                        <option value="25">25 per page</option>
-                        <option value="50">50 per page</option>
-                    </select>
-                    <!-- Bulk Actions -->
-                    <select id="usersBulkActions" onchange="handleUsersBulkAction(this.value)" class="bulk-actions" disabled>
-                        <option value="">Bulk Actions</option>
-                        <option value="delete">Delete Selected</option>
-                        <option value="export">Export Selected</option>
-                    </select>
-
-                    <button onclick="loadAllUsers()" class="btn-secondary">
-                            <i class="fas fa-sync-alt"></i> 
-                    </button>
-                    
-                    <!-- Export All -->
-                    <button onclick="exportUsers()" class="btn-primary">Export All as CSV</button>
-                </div>
+       <!-- Users List Section - UPDATED WITH NEW FIELDS -->
+<!-- Users List Section - UPDATED WITH FILE TOPIC -->
+<div class="section-container">
+    <div class="section-header">
+        <h2>Registered Users</h2>
+        <div class="controls-container">
+            <!-- Search -->
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="usersSearch" placeholder="Search users..." onkeyup="handleUsersSearch()">
             </div>
+            <!-- Items Per Page -->
+            <select id="usersPerPage" onchange="changeUsersPerPage(this.value)" class="items-per-page">
+                <option value="10">10 per page</option>
+                <option value="25">25 per page</option>
+                <option value="50">50 per page</option>
+            </select>
+            <!-- Bulk Actions -->
+            <select id="usersBulkActions" onchange="handleUsersBulkAction(this.value)" class="bulk-actions" disabled>
+                <option value="">Bulk Actions</option>
+                <option value="delete">Delete Selected</option>
+                <option value="export">Export Selected</option>
+            </select>
+
+            <button onclick="loadAllUsers()" class="btn-secondary">
+                <i class="fas fa-sync-alt"></i> 
+            </button>
             
-            <table id="usersTable">
-                <thead>
-                    <tr>
-                        <th width="50">
-                            <input type="checkbox" id="selectAllUsers" onchange="toggleSelectAllUsers(this.checked)">
-                        </th>
-                        <th onclick="sortUsers('name')" class="sortable">
-                            Name <i class="fas fa-sort"></i>
-                        </th>
-                        <th onclick="sortUsers('email')" class="sortable">
-                            Email <i class="fas fa-sort"></i>
-                        </th>
-                        <th onclick="sortUsers('whatsapp')" class="sortable">
-                            WhatsApp <i class="fas fa-sort"></i>
-                        </th>
-                        <th onclick="sortUsers('createdAt')" class="sortable">
-                            Registration Date <i class="fas fa-sort"></i>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="usersTableBody">
-                    <!-- Users will be loaded here -->
-                </tbody>
-            </table>
-            
-            <!-- Users Pagination -->
-            <div id="usersPagination" class="pagination-container"></div>
+            <!-- Export All -->
+            <button onclick="exportUsers()" class="btn-primary">Export All as CSV</button>
         </div>
     </div>
+    
+    <table id="usersTable">
+        <thead>
+            <tr>
+                <th width="50">
+                    <input type="checkbox" id="selectAllUsers" onchange="toggleSelectAllUsers(this.checked)">
+                </th>
+                <th onclick="sortUsers('name')" class="sortable">
+                    Name <i class="fas fa-sort"></i>
+                </th>
+                <th onclick="sortUsers('email')" class="sortable">
+                    Email <i class="fas fa-sort"></i>
+                </th>
+                <th onclick="sortUsers('whatsapp')" class="sortable">
+                    WhatsApp <i class="fas fa-sort"></i>
+                </th>
+                <th onclick="sortUsers('eduLevel')" class="sortable">
+                    Edu Level <i class="fas fa-sort"></i>
+                </th>
+                <th onclick="sortUsers('knowledgeLevel')" class="sortable">
+                    Knowledge Level <i class="fas fa-sort"></i>
+                </th>
+                <th onclick="sortUsers('fileTopic')" class="sortable">
+                    File Topic <i class="fas fa-sort"></i>
+                </th>
+                <th onclick="sortUsers('sourcePlatform')" class="sortable">
+                    Source Platform <i class="fas fa-sort"></i>
+                </th>
+                <th onclick="sortUsers('createdAt')" class="sortable">
+                    Registration Date & Time <i class="fas fa-sort"></i>
+                </th>
+            </tr>
+        </thead>
+        <tbody id="usersTableBody">
+            <!-- Users will be loaded here -->
+        </tbody>
+    </table>
+    
+    <!-- Users Pagination -->
+    <div id="usersPagination" class="pagination-container"></div>
+</div>
 
 
     <!-- Your existing JavaScript file - functionality remains unchanged -->

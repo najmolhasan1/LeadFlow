@@ -308,6 +308,57 @@ function copyGeneratedLink() {
     }
 }
 
+
+// Toggle social links dropdown - UPDATED VERSION
+function toggleSocialLinks(fileId) {
+    const socialLinks = document.getElementById(`socialLinks-${fileId}`);
+    const toggleBtn = event.target.closest('.social-links-toggle');
+    
+    // Close all other open dropdowns first
+    document.querySelectorAll('.social-links-content').forEach(dropdown => {
+        if (dropdown.id !== `socialLinks-${fileId}`) {
+            dropdown.style.display = 'none';
+        }
+    });
+    
+    // Update all toggle buttons
+    document.querySelectorAll('.social-links-toggle').forEach(btn => {
+        if (btn !== toggleBtn) {
+            btn.innerHTML = '<i class="fas fa-share-alt"></i> Show Social Links';
+            btn.classList.remove('active');
+        }
+    });
+    
+    // Toggle current dropdown
+    if (socialLinks.style.display === 'block') {
+        socialLinks.style.display = 'none';
+        toggleBtn.innerHTML = '<i class="fas fa-share-alt"></i> Show Social Links';
+        toggleBtn.classList.remove('active');
+    } else {
+        socialLinks.style.display = 'block';
+        toggleBtn.innerHTML = '<i class="fas fa-times"></i> Hide Links';
+        toggleBtn.classList.add('active');
+    }
+    
+    // Close dropdown when clicking outside
+    setTimeout(() => {
+        const closeOnClickOutside = (e) => {
+            if (!socialLinks.contains(e.target) && !toggleBtn.contains(e.target)) {
+                socialLinks.style.display = 'none';
+                toggleBtn.innerHTML = '<i class="fas fa-share-alt"></i> Show Social Links';
+                toggleBtn.classList.remove('active');
+                document.removeEventListener('click', closeOnClickOutside);
+            }
+        };
+        
+        if (socialLinks.style.display === 'block') {
+            setTimeout(() => {
+                document.addEventListener('click', closeOnClickOutside);
+            }, 100);
+        }
+    }, 100);
+}
+
 // Copy link from table function
 function copyTableLink(link) {
     try {
@@ -325,7 +376,7 @@ function copyTableLink(link) {
     }
 }
 
-// Display files with pagination
+// Display files with pagination - UPDATED WITH SOCIAL LINKS
 function displayFiles(page = 1) {
     const totalFiles = filteredFiles.length;
     const totalPages = Math.ceil(totalFiles / filesPerPage);
@@ -355,10 +406,67 @@ function displayFiles(page = 1) {
                 <td>${file.originalName}</td>
                 <td>
                     <div class="link-display">
-                        <span class="link-text">${window.location.origin}/register?fileId=${file._id}</span>
-                        <button onclick="copyTableLink('${window.location.origin}/register?fileId=${file._id}')" class="copy-btn">
-                            Copy
-                        </button>
+                        <div class="social-links-dropdown">
+                            <button class="social-links-toggle" onclick="toggleSocialLinks('${file._id}')">
+                                <i class="fas fa-share-alt"></i> Show Social Links
+                            </button>
+<div class="social-links-content" id="socialLinks-${file._id}" style="display: none;">
+                                <div class="social-link-item">
+                                    <span class="platform">🔵 Facebook:</span>
+                                    <span class="link-text">${window.location.origin}/register?fileId=${file._id}&source=Facebook</span>
+                                    <button onclick="copyTableLink('${window.location.origin}/register?fileId=${file._id}&source=Facebook')" class="copy-btn-small">
+                                        Copy
+                                    </button>
+                                </div>
+                                <div class="social-link-item">
+                                    <span class="platform">🔴 YouTube:</span>
+                                    <span class="link-text">${window.location.origin}/register?fileId=${file._id}&source=YouTube</span>
+                                    <button onclick="copyTableLink('${window.location.origin}/register?fileId=${file._id}&source=YouTube')" class="copy-btn-small">
+                                        Copy
+                                    </button>
+                                </div>
+                                <div class="social-link-item">
+                                    <span class="platform">🔵 LinkedIn:</span>
+                                    <span class="link-text">${window.location.origin}/register?fileId=${file._id}&source=LinkedIn</span>
+                                    <button onclick="copyTableLink('${window.location.origin}/register?fileId=${file._id}&source=LinkedIn')" class="copy-btn-small">
+                                        Copy
+                                    </button>
+                                </div>
+                                <div class="social-link-item">
+                                    <span class="platform">🟢 WhatsApp:</span>
+                                    <span class="link-text">${window.location.origin}/register?fileId=${file._id}&source=WhatsApp</span>
+                                    <button onclick="copyTableLink('${window.location.origin}/register?fileId=${file._id}&source=WhatsApp')" class="copy-btn-small">
+                                        Copy
+                                    </button>
+                                </div>
+                                <div class="social-link-item">
+                                    <span class="platform">🟣 Instagram:</span>
+                                    <span class="link-text">${window.location.origin}/register?fileId=${file._id}&source=Instagram</span>
+                                    <button onclick="copyTableLink('${window.location.origin}/register?fileId=${file._id}&source=Instagram')" class="copy-btn-small">
+                                        Copy
+                                    </button>
+                                </div>
+                                <div class="social-link-item">
+                                    <span class="platform">🔵 Twitter:</span>
+                                    <span class="link-text">${window.location.origin}/register?fileId=${file._id}&source=Twitter</span>
+                                    <button onclick="copyTableLink('${window.location.origin}/register?fileId=${file._id}&source=Twitter')" class="copy-btn-small">
+                                        Copy
+                                    </button>
+                                </div>
+                                <div class="social-link-item">
+                                    <span class="platform">⚪ Direct:</span>
+                                    <span class="link-text">${window.location.origin}/register?fileId=${file._id}&source=Direct</span>
+                                    <button onclick="copyTableLink('${window.location.origin}/register?fileId=${file._id}&source=Direct')" class="copy-btn-small">
+                                        Copy
+                                    </button>
+                                </div>
+                                <div class="social-links-actions">
+                                    <button onclick="copyAllSocialLinks('${file._id}')" class="copy-all-btn">
+                                        <i class="fas fa-copy"></i> Copy All Links
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </td>
                 <td>${new Date(file.uploadedAt).toLocaleDateString()}</td>
